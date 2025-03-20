@@ -19,7 +19,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          submodules: 'true'
+          submodules: 'recursive'
 
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
@@ -42,6 +42,8 @@ jobs:
           rm -rf lib/ANAL/.git*
           rm -rf lib/ANAL/doxygen-awesome-css/.git*
           git rm --cached lib/ANAL/
+          git add .
+          git rm --cached -r lib/ANAL/doxygen-awesome-css/
           git add .
           git commit -m "chore: Resolve submodules"
 
