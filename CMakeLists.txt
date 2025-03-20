@@ -11,4 +11,8 @@ project(Arcade
         LANGUAGES CXX
 )
 
+
+add_subdirectory(lib/ANAL)
 add_subdirectory(Arcade)
+
+add_subdirectory(Renderers/debug)
