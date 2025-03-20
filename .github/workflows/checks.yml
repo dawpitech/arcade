@@ -1,0 +1,51 @@
+#file: noinspection SpellCheckingInspection
+name: Checks
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+env:
+  SSH_PUB_KEY:
+    ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKzKKT5xCssZ38UI5VWaPOqW3ldVsg/0tDceTrCFnsd3 github.action@antoinebellanger.fr
+
+jobs:
+  mirror:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: $SSH_PUB_KEY
+
+      - name: Fetch all commits
+        run: git fetch --unshallow origin
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Remove submodules
+        run: |
+          rm .gitmodules
+          rm lib/ANAL/.gitmodules
+          rm -rf lib/ANAL/.git*
+          rm -rf lib/ANAL/doxygen-awesome-css/.git*
+          git rm --cached lib/ANAL/
+          git add .
+          git commit -m "chore: Resolve submodules content and remove them"
+
+      - name: Push to epitech
+        run: |
+          git remote add epitech "${{ secrets.MIRROR_REPO }}"
+          git push --force epitech
