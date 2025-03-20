@@ -12,7 +12,7 @@ env:
 
 jobs:
   mirror:
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' && github.repository_owner == 'dawpitech'
     runs-on: ubuntu-latest
 
     steps:
@@ -43,7 +43,7 @@ jobs:
           rm -rf lib/ANAL/doxygen-awesome-css/.git*
           git rm --cached lib/ANAL/
           git add .
-          git commit -m "chore: Resolve submodules content and remove them"
+          git commit -m "chore: Resolve submodules"
 
       - name: Push to epitech
         run: |
