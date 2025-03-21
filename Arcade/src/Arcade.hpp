@@ -30,7 +30,7 @@ class Arcade
         void launch();
 
         void setGame(std::unique_ptr<anal::IGame>&);
-        void setRenderer(std::unique_ptr<anal::IRenderer>);
+        void setRenderer(std::unique_ptr<anal::IRenderer>&);
 
         SafeDL::safeHandle _game_so_handle;
         SafeDL::safeHandle _renderer_so_handle;

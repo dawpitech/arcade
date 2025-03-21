@@ -25,10 +25,8 @@ int main(const int argc, const char** argv)
         const auto module = ModuleLoader::loadModule(arcade._renderer_so_handle);
         if (module->getModuleType() != anal::IModule::ModuleType::RENDERER)
             throw std::exception();
-        auto* rawRenderer = dynamic_cast<anal::IRenderer*>(module.get());
-        //TODO: check dyn cast
-        std::unique_ptr<anal::IRenderer> renderer(rawRenderer);
-        arcade.setRenderer(std::move(renderer));
+        auto renderer = ModuleLoader::loadRenderer(arcade._renderer_so_handle);
+        arcade.setRenderer(renderer);
         arcade.setGame(menu);
     }
     catch (std::exception& e)

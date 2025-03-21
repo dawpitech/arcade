@@ -38,7 +38,7 @@ void Arcade::setGame(std::unique_ptr<anal::IGame>& game)
     this->_game = std::move(game);
 }
 
-void Arcade::setRenderer(std::unique_ptr<anal::IRenderer> renderer)
+void Arcade::setRenderer(std::unique_ptr<anal::IRenderer>& renderer)
 {
     this->_renderer = std::move(renderer);
 }
