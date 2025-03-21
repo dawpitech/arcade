@@ -11,6 +11,10 @@ project(Arcade
         LANGUAGES CXX
 )
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -g3 -fsanitize=address,leak,undefined -fanalyzer")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3 -fsanitize=address,leak,undefined -fanalyzer")
+endif()
 
 add_subdirectory(lib/ANAL)
 add_subdirectory(Arcade)

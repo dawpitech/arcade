@@ -8,28 +8,37 @@
 #include <iostream>
 
 #include "Arcade.hpp"
-#include "utils/ModuleLoader.hpp"
 
-int printHelp()
+#include <thread>
+
+void Arcade::printHelp()
 {
     std::cout << "USAGE: ./arcade </path/to/a/renderer.so>" << std::endl;
-    return EXIT_FAILURE_TECH;
 }
 
-int main(const int argc, const char** argv)
+void Arcade::launch()
 {
-    if (argc != 2)
-        return printHelp();
-    try
+    if (this->_game == nullptr || this->_renderer == nullptr)
+        throw std::exception();
+
+    while (this->run)
     {
-        const SafeDL::safeHandle handle = SafeDL::open(argv[1], RTLD_LAZY);
-        const std::unique_ptr<anal::IModule> module = ModuleLoader::loadModule(handle);
-        std::cout << "Doing things" << std::endl;
+        this->_game->processEvents(std::vector<anal::Event>());
+        this->_game->compute();
+        this->_game->render();
+
+        // TODO: add proper fps clamping using hardware clock
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        this->run = false;
     }
-    catch (std::exception& e)
-    {
-        std::cerr << "arcade: " << e.what() << std::endl;
-        return EXIT_FAILURE_TECH;
-    }
-    return EXIT_SUCCESS;
+}
+
+void Arcade::setGame(std::unique_ptr<anal::IGame>& game)
+{
+    this->_game = std::move(game);
+}
+
+void Arcade::setRenderer(std::unique_ptr<anal::IRenderer> renderer)
+{
+    this->_renderer = std::move(renderer);
 }

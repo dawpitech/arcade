@@ -14,7 +14,9 @@ class DebugRenderer final : public anal::IRenderer
 {
     public:
         DebugRenderer() = default;
-        ~DebugRenderer() override = default;
+        ~DebugRenderer() override {
+            std::cout << "test" << std::endl;
+        }
 
         ModuleType getModuleType() override { return ModuleType::RENDERER; }
         ModuleVersion getModuleVersion() override { return ModuleVersion::V1_0_0; }

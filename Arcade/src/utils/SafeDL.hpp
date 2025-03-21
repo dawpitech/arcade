@@ -27,6 +27,7 @@ class SafeDL
             {
                 if (handle == nullptr || dlclose(handle) != 0)
                     throw Exception();
+                std::cout << "SAFE DL DELETER" << std::endl;
             }
         };
         typedef std::unique_ptr<void, SafeDLDeleter> safeHandle;
