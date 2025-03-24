@@ -16,7 +16,10 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3 -fsanitize=address,leak,undefined -fanalyzer")
 endif()
 
+include(FindPkgConfig)
+
 add_subdirectory(lib/ANAL)
 add_subdirectory(Arcade)
 
 add_subdirectory(Renderers/debug)
+add_subdirectory(Renderers/SFML)

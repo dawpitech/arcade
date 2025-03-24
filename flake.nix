@@ -23,6 +23,10 @@
             mold
             cmake
             doxygen
+            pkg-config
+            sfml
+            ncurses
+            SDL2
           ] ++ deps;
         };
 
