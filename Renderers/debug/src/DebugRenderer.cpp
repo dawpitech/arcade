@@ -9,12 +9,12 @@
 
 #include "DebugRenderer.hpp"
 
-void DebugRenderer::drawSprite(const anal::ISprite& sprite)
+void DebugRenderer::drawSprite(const ANAL::ISprite& sprite)
 {
     std::cout << "Should draw sprite" << std::endl;
 }
 
-void DebugRenderer::drawText(const std::string&, anal::Vector2<int>)
+void DebugRenderer::drawText(const std::string&, ANAL::Vector2<int>)
 {
     std::cout << "Should draw text" << std::endl;
 }
@@ -29,7 +29,7 @@ void DebugRenderer::render()
     std::cout << "Should render" << std::endl;
 }
 
-std::vector<anal::Event>& DebugRenderer::getEvents()
+std::vector<ANAL::Event>& DebugRenderer::getEvents()
 {
     return _events;
 }
@@ -39,8 +39,11 @@ void DebugRenderer::clear()
     std::cout << "Should clear" << std::endl;
 }
 
-std::unique_ptr<anal::IRenderer> uwu_entrypoint_renderer()
-    { return std::make_unique<DebugRenderer>(); }
+ANAL::ModuleVersion uwu_get_module_version()
+    { return ANAL::ModuleVersion::V1_1_0; }
 
-std::unique_ptr<anal::IModule> uwu_entrypoint_module()
+ANAL::ModuleType uwu_get_module_type()
+    { return ANAL::ModuleType::RENDERER; }
+
+std::unique_ptr<ANAL::IRenderer> uwu_entrypoint_renderer()
     { return std::make_unique<DebugRenderer>(); }

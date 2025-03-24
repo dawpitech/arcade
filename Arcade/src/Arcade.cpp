@@ -23,9 +23,9 @@ void Arcade::launch()
 
     while (this->run)
     {
-        this->_game->processEvents(std::vector<anal::Event>());
+        this->_game->processEvents(std::vector<ANAL::Event>());
         this->_game->compute();
-        this->_game->render();
+        this->_game->render(*this->_renderer);
 
         // TODO: add proper fps clamping using hardware clock
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
@@ -33,12 +33,12 @@ void Arcade::launch()
     }
 }
 
-void Arcade::setGame(std::unique_ptr<anal::IGame>& game)
+void Arcade::setGame(std::unique_ptr<ANAL::IGame>& game)
 {
     this->_game = std::move(game);
 }
 
-void Arcade::setRenderer(std::unique_ptr<anal::IRenderer>& renderer)
+void Arcade::setRenderer(std::unique_ptr<ANAL::IRenderer>& renderer)
 {
     this->_renderer = std::move(renderer);
 }

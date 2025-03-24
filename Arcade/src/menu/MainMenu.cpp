@@ -9,7 +9,7 @@
 
 #include <iostream>
 
-void MainMenu::processEvents(const std::vector<anal::Event>&)
+void MainMenu::processEvents(const std::vector<ANAL::Event>&)
 {
     std::cout << "MainMenu is processing Events" << std::endl;
 }
@@ -19,13 +19,16 @@ void MainMenu::compute()
     std::cout << "MainMenu is computing" << std::endl;
 }
 
-void MainMenu::render()
+void MainMenu::render(ANAL::IRenderer& renderer)
 {
     std::cout << "MainMenu is rendering" << std::endl;
 }
 
-std::unique_ptr<anal::IGame> uwu_entrypoint_renderer()
-    { return std::make_unique<MainMenu>(); }
+ANAL::ModuleVersion uwu_get_module_version()
+{ return ANAL::ModuleVersion::V1_1_0; }
 
-std::unique_ptr<anal::IModule> uwu_entrypoint_module()
+ANAL::ModuleType uwu_get_module_type()
+{ return ANAL::ModuleType::GAME; }
+
+std::unique_ptr<ANAL::IGame> uwu_entrypoint_game()
     { return std::make_unique<MainMenu>(); }

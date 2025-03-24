@@ -29,15 +29,15 @@ class Arcade
         static void printHelp();
         void launch();
 
-        void setGame(std::unique_ptr<anal::IGame>&);
-        void setRenderer(std::unique_ptr<anal::IRenderer>&);
+        void setGame(std::unique_ptr<ANAL::IGame>&);
+        void setRenderer(std::unique_ptr<ANAL::IRenderer>&);
 
         SafeDL::safeHandle _game_so_handle;
         SafeDL::safeHandle _renderer_so_handle;
 
     private:
-        std::unique_ptr<anal::IGame> _game;
-        std::unique_ptr<anal::IRenderer> _renderer;
+        std::unique_ptr<ANAL::IGame> _game;
+        std::unique_ptr<ANAL::IRenderer> _renderer;
         bool run = true;
 };
 #endif //ARCADE_HPP

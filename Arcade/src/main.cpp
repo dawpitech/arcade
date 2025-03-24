@@ -15,15 +15,14 @@
 int main(const int argc, const char** argv)
 {
     Arcade arcade;
-    std::unique_ptr<anal::IGame> menu = std::make_unique<MainMenu>();
+    std::unique_ptr<ANAL::IGame> menu = std::make_unique<MainMenu>();
 
     if (argc != 2)
         return Arcade::printHelp(), EXIT_FAILURE_TECH;
     try
     {
         arcade._renderer_so_handle = SafeDL::open(argv[1], RTLD_LAZY);
-        const auto module = ModuleLoader::loadModule(arcade._renderer_so_handle);
-        if (module->getModuleType() != anal::IModule::ModuleType::RENDERER)
+        if (ModuleLoader::getModuleType(arcade._renderer_so_handle) != ANAL::ModuleType::RENDERER)
             throw std::exception();
         auto renderer = ModuleLoader::loadRenderer(arcade._renderer_so_handle);
         arcade.setRenderer(renderer);

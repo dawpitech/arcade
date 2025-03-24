@@ -24,23 +24,27 @@ class ModuleLoader
                 std::string _what;
         };
 
-        static std::unique_ptr<anal::IModule> loadModule(const SafeDL::safeHandle& handle)
+        static ANAL::ModuleType getModuleType(const SafeDL::safeHandle& handle)
         {
-            const auto func = reinterpret_cast<std::unique_ptr<anal::IModule>(*)()>
-                (dlsym(handle.get(), "uwu_entrypoint_module"));
+            const auto func = reinterpret_cast<ANAL::ModuleType(*)()>
+                (dlsym(handle.get(), "uwu_get_module_type"));
             if (func == nullptr)
-                throw Exception("Shared library is not a compatible ANAL module");
-            auto module = func();
-            if (module->getModuleVersion() >= anal::IModule::ModuleVersion::NOT_SUPPORTED)
-                throw Exception("ANAL module is not using a supported version");
-            if (module->getModuleType() == anal::IModule::ModuleType::UNKNOWN)
-                throw Exception("ANAL module type unknown");
-            return std::move(module);
+                throw Exception("Couldn't retrieve module info from shared library");
+            return func();
         }
 
-        static std::unique_ptr<anal::IGame> loadGame(const SafeDL::safeHandle& handle)
+        static ANAL::ModuleVersion getModuleVersion(const SafeDL::safeHandle& handle)
         {
-            const auto func = reinterpret_cast<std::unique_ptr<anal::IGame>(*)()>
+            const auto func = reinterpret_cast<ANAL::ModuleVersion(*)()>
+                (dlsym(handle.get(), "uwu_get_module_version"));
+            if (func == nullptr)
+                throw Exception("Couldn't retrieve module info from shared library");
+            return func();
+        }
+
+        static std::unique_ptr<ANAL::IGame> loadGame(const SafeDL::safeHandle& handle)
+        {
+            const auto func = reinterpret_cast<std::unique_ptr<ANAL::IGame>(*)()>
                 (dlsym(handle.get(), "uwu_entrypoint_game"));
             if (func == nullptr)
                 throw Exception("Couldn't retrieve game from shared library");
@@ -48,9 +52,9 @@ class ModuleLoader
             return std::move(game);
         }
 
-        static std::unique_ptr<anal::IRenderer> loadRenderer(const SafeDL::safeHandle& handle)
+        static std::unique_ptr<ANAL::IRenderer> loadRenderer(const SafeDL::safeHandle& handle)
         {
-            const auto func = reinterpret_cast<std::unique_ptr<anal::IRenderer>(*)()>
+            const auto func = reinterpret_cast<std::unique_ptr<ANAL::IRenderer>(*)()>
                 (dlsym(handle.get(), "uwu_entrypoint_renderer"));
             if (func == nullptr)
                 throw Exception("Couldn't retrieve renderer from shared library");

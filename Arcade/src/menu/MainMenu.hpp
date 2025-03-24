@@ -10,17 +10,14 @@
 
     #include <ANAL/IGame.hpp>
 
-class MainMenu final : public anal::IGame
+class MainMenu final : public ANAL::IGame
 {
     public:
         MainMenu() = default;
         ~MainMenu() override = default;
 
-        ModuleType getModuleType() override { return ModuleType::GAME; }
-        ModuleVersion getModuleVersion() override { return ModuleVersion::V1_0_0; }
-
-        void processEvents(const std::vector<anal::Event>&) override;
+        void processEvents(const std::vector<ANAL::Event>&) override;
         void compute() override;
-        void render() override;
+        void render(ANAL::IRenderer& renderer) override;
 };
 #endif //MAINMENU_HPP
