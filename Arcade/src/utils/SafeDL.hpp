@@ -18,7 +18,11 @@ class SafeDL
         class Exception final : public std::exception
         {
             public:
-                [[nodiscard]] const char* what() const noexcept override { return "Couldn't open given shared library"; }
+                explicit Exception(const std::string& what = "Couldn't open given shared library") { this->_what = what; }
+                [[nodiscard]] const char* what() const noexcept override { return this->_what.c_str(); }
+
+            private:
+                std::string _what;
         };
 
         struct SafeDLDeleter
@@ -38,7 +42,7 @@ class SafeDL
             const std::string filename_r = "./" + filename;
             void* rawHandle = dlopen(filename_r.c_str(), flags);
             if (rawHandle == nullptr)
-                throw Exception();
+                throw Exception(dlerror());
             return make_safeHandle(rawHandle);
         }
 };

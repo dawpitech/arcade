@@ -22,6 +22,12 @@ void MainMenu::compute()
 void MainMenu::render(ANAL::IRenderer& renderer)
 {
     std::cout << "MainMenu is rendering" << std::endl;
+    renderer.clear();
+    renderer.setWindowTitle("Main Menu - Arcade");
+    renderer.drawText("Arcade menu", ANAL::Vector2(0, 0));
+    renderer.drawText("Choose game:", ANAL::Vector2(0, 2));
+    renderer.drawText("-> Minesweeper", ANAL::Vector2(1, 3));
+    renderer.render();
 }
 
 ANAL::ModuleVersion uwu_get_module_version()

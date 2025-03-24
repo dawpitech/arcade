@@ -23,13 +23,13 @@ void Arcade::launch()
 
     while (this->run)
     {
-        this->_game->processEvents(std::vector<ANAL::Event>());
+
+        this->_game->processEvents(this->_renderer->getEvents());
         this->_game->compute();
         this->_game->render(*this->_renderer);
 
         // TODO: add proper fps clamping using hardware clock
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        this->run = false;
     }
 }
 
