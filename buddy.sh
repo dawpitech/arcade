@@ -10,10 +10,10 @@ mkdir ./build/ && cd ./build/ || exit
 
 if [[ $1 == "-d" ]]; then
     cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug
-    cmake --build . --verbose
+    cmake --build . --verbose || exit
 else
     cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
-    cmake --build .
+    cmake --build . || exit
 fi
 
 cd ..
