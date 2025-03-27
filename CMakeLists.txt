@@ -21,5 +21,5 @@ include(FindPkgConfig)
 add_subdirectory(lib/ANAL)
 add_subdirectory(Arcade)
 
-add_subdirectory(Renderers/debug)
+#add_subdirectory(Renderers/debug)
 add_subdirectory(Renderers/SFML)

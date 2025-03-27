@@ -6,10 +6,11 @@
 */
 
 #include <iostream>
+#include <thread>
 
 #include "Arcade.hpp"
-
-#include <thread>
+#include "internals/Asset.hpp"
+#include "internals/Entity.hpp"
 
 void Arcade::printHelp()
 {
@@ -23,13 +24,17 @@ void Arcade::launch()
 
     while (this->run)
     {
-
+        for (const auto event : this->_renderer->getEvents())
+            if (event == ANAL::Event::CLOSE)
+                this->run = false;
         this->_game->processEvents(this->_renderer->getEvents());
-        this->_game->compute();
-        this->_game->render(*this->_renderer);
 
         // TODO: add proper fps clamping using hardware clock
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+        this->_game->compute();
+        this->_game->render(*this->_renderer, *this);
+
     }
 }
 
@@ -41,4 +46,14 @@ void Arcade::setGame(std::unique_ptr<ANAL::IGame>& game)
 void Arcade::setRenderer(std::unique_ptr<ANAL::IRenderer>& renderer)
 {
     this->_renderer = std::move(renderer);
+}
+
+std::unique_ptr<ANAL::IAsset> Arcade::newAsset() const
+{
+    return std::make_unique<Asset>();
+}
+
+std::unique_ptr<ANAL::IEntity> Arcade::newEntity() const
+{
+    return std::make_unique<Entity>();
 }
