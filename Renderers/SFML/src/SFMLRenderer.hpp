@@ -18,7 +18,7 @@ namespace arcade
             SFMLRenderer();
             ~SFMLRenderer() override;
 
-            void drawSprite(const ANAL::ISprite& sprite) override;
+            void drawEntity(const ANAL::IEntity& entity) override;
             void drawText(const std::string&, ANAL::Vector2<int>) override;
 
             void setWindowTitle(const std::string&) override;

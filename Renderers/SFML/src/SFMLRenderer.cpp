@@ -9,6 +9,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "SFMLRenderer.hpp"
+#include "ANAL/IModule.hpp"
 
 arcade::SFMLRenderer::SFMLRenderer()
     : _window(sf::VideoMode(600, 600), "Arcade")
@@ -23,12 +24,16 @@ arcade::SFMLRenderer::~SFMLRenderer()
     std::cout << "SFML Destroyed" << std::endl;
 }
 
-void arcade::SFMLRenderer::drawSprite(const ANAL::ISprite& sprite)
+void arcade::SFMLRenderer::drawEntity(const ANAL::IEntity& entity)
 {
     sf::Texture texture;
-    //sprite.getAsset()
-    if (texture.loadFromFile("./assets/textures"))
+    if (!texture.loadFromFile(entity.getAsset().getTexturePath()))
         throw Exception();
+    sf::Sprite sfSprite(texture);
+    sfSprite.setPosition(static_cast<float>(entity.getPos().x)*40,
+        static_cast<float>(entity.getPos().y)*40);
+    sfSprite.setScale(4, 4);
+    this->_window.draw(sfSprite);
 }
 
 void arcade::SFMLRenderer::drawText(const std::string& str,
@@ -60,6 +65,12 @@ void arcade::SFMLRenderer::clear()
 
 std::vector<ANAL::Event>& arcade::SFMLRenderer::getEvents()
 {
+    sf::Event event{};
+    while(_window.pollEvent(event))
+    {
+        if (event.type == sf::Event::Closed)
+            this->_events.insert(this->_events.end(), ANAL::Event::CLOSE);
+    }
     return this->_events;
 }
 
