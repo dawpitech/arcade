@@ -23,3 +23,4 @@ add_subdirectory(Arcade)
 
 #add_subdirectory(Renderers/debug)
 add_subdirectory(Renderers/SFML)
+add_subdirectory(Renderers/SDL)
