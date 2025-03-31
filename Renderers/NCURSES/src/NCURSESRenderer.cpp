@@ -37,7 +37,7 @@ arcade::NCursesRenderer::~NCursesRenderer()
 
 void arcade::NCursesRenderer::drawEntity(const ANAL::IEntity& entity)
 {
-    char entityChar = 'X'; 
+    char entityChar = entity.getAsset().getAlternateRender(); 
 
     mvaddch(entity.getPos().y, entity.getPos().x, entityChar);
 }
