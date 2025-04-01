@@ -15,8 +15,10 @@ Minesweeper::Board::Board()
 
 void Minesweeper::Board::initializeMap()
 {
-    for (auto& row : _map) {
-        for (auto& cell : row) {
+    for (auto &row : _map)
+    {
+        for (auto &cell : row)
+        {
             cell.setBomb(false);
             cell.setFlag(false);
             cell.setNumber(0);
@@ -32,12 +34,14 @@ void Minesweeper::Board::placeMine()
 {
     srand(time(0));
     int minesPlaced = 0;
-    while (minesPlaced < NUMBEROFBOMBS) {
-        int x = rand() % SIZEARRAY;
-        int y = rand() % SIZEARRAY;
-        if (!_map[y][x].getBomb()) {
+    while (minesPlaced < NUMBER_OF_BOMBS)
+    {
+        int x = rand() % SIZE_ARRAY;
+        int y = rand() % SIZE_ARRAY;
+        if (!_map[y][x].getBomb())
+        {
             _map[y][x].setBomb(true);
-            minesPlaced ++;
+            minesPlaced++;
         }
     }
 }
@@ -46,7 +50,7 @@ int Minesweeper::Board::conditionAdjacent(int y, int x)
 {
     int count = 0;
 
-    //Up-line
+    // Up-line
     if (_map[y - 1][x - 1].getBomb() == true)
         count + 1;
     if (_map[y - 1][x].getBomb() == true)
@@ -54,13 +58,13 @@ int Minesweeper::Board::conditionAdjacent(int y, int x)
     if (_map[y - 1][x + 1].getBomb() == true)
         count + 1;
 
-    //middle-line
+    // middle-line
     if (_map[y][x - 1].getBomb() == true)
         count + 1;
     if (_map[y][x - 1].getBomb() == true)
         count + 1;
 
-    //down-line
+    // down-line
     if (_map[y + 1][x - 1].getBomb() == true)
         count + 1;
     if (_map[y + 1][x].getBomb() == true)
@@ -72,8 +76,10 @@ int Minesweeper::Board::conditionAdjacent(int y, int x)
 
 void Minesweeper::Board::adjacentBombs()
 {
-    for (int y = 0; y < SIZEARRAY; y ++) {
-        for (int x = 0; x < SIZEARRAY; x ++) {
+    for (int y = 0; y < SIZE_ARRAY; y++)
+    {
+        for (int x = 0; x < SIZE_ARRAY; x++)
+        {
             if (_map[y][x].getBomb())
                 continue;
             int count = 0;
@@ -83,10 +89,12 @@ void Minesweeper::Board::adjacentBombs()
     }
 }
 
-bool Minesweeper::Board::verifMapIsEmpty(std::array<std::array<Minesweeper::Mines, SIZEARRAY>, SIZEARRAY> _map)
+bool Minesweeper::Board::verifMapIsEmpty(std::array<std::array<Minesweeper::Mines, SIZE_ARRAY>, SIZE_ARRAY> _map)
 {
-    for (const auto& row : _map) {
-        for (const auto& cell : row) {
+    for (const auto &row : _map)
+    {
+        for (const auto &cell : row)
+        {
             if (cell.getBomb() || cell.getFlag() || cell.getVisible() || cell.getNumber() != 0)
                 return false;
         }
@@ -96,9 +104,12 @@ bool Minesweeper::Board::verifMapIsEmpty(std::array<std::array<Minesweeper::Mine
 
 void Minesweeper::Board::clearMap()
 {
-    if (!verifMapIsEmpty(_map)) {
-        for (auto& row : _map) {
-            for (auto& cell : row) {
+    if (!verifMapIsEmpty(_map))
+    {
+        for (auto &row : _map)
+        {
+            for (auto &cell : row)
+            {
                 cell.reset();
             }
         }
