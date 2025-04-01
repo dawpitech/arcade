@@ -39,10 +39,10 @@ void MainMenu::render(ANAL::IRenderer& renderer, ANAL::IArcade& arcade)
 }
 
 ANAL::ModuleVersion uwu_get_module_version()
-{ return ANAL::ModuleVersion::V1_1_0; }
+    { return ANAL::ModuleVersion::V1_1_0; }
 
 ANAL::ModuleType uwu_get_module_type()
-{ return ANAL::ModuleType::GAME; }
+    { return ANAL::ModuleType::GAME; }
 
 std::unique_ptr<ANAL::IGame> uwu_entrypoint_game()
     { return std::make_unique<MainMenu>(); }

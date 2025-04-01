@@ -7,9 +7,10 @@ pkg_search_module(SDL2_IMAGE REQUIRED SDL2_image)
 
 target_link_libraries(arcade_sdl
         PRIVATE anal
-        PRIVATE ${SDL2_LIBRARIES}
-        PRIVATE ${SDL2_TTF_LIBRARIES}
-        PRIVATE ${SDL2_IMAGE_LIBRARIES})
+        PRIVATE ${SDL2_LIBRARIES} ${SDL2_TTF_LIBRARIES} ${SDL2_IMAGE_LIBRARIES}
+)
+
+target_include_directories(arcade_sdl PRIVATE ${SDL2_IMAGE_INCLUDE_DIRS})
 
 set_target_properties(
         arcade_sdl

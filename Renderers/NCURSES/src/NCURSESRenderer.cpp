@@ -5,12 +5,11 @@
 ** NCURSESRenderer.cpp
 */
 
-#include <ncurses.h>
 #include <iostream>
-#include <cstdio>
-#include <unistd.h>
-#include <ANAL/IModule.hpp>
+#include <ncurses.h>
+
 #include "NCURSESRenderer.hpp"
+#include "ANAL/IModule.hpp"
 
 arcade::NCursesRenderer::NCursesRenderer()
     : _window(nullptr)
@@ -37,14 +36,14 @@ arcade::NCursesRenderer::~NCursesRenderer()
 
 void arcade::NCursesRenderer::drawEntity(const ANAL::IEntity& entity)
 {
-    char entityChar = entity.getAsset().getAlternateRender(); 
+    const char entityChar = entity.getAsset().getAlternateRender();
 
     mvaddch(entity.getPos().y, entity.getPos().x, entityChar);
 }
 
 void arcade::NCursesRenderer::drawText(const std::string& str, const ANAL::Vector2<int> pos)
 {
-    mvwprintw(this->_window, pos.y, pos.x, str.c_str());
+    mvwaddstr(this->_window, pos.y, pos.x, str.c_str());
 }
 
 void arcade::NCursesRenderer::setWindowTitle(const std::string& title)
@@ -64,7 +63,7 @@ std::vector<ANAL::Event>& arcade::NCursesRenderer::getEvents()
 {
     this->_events.clear();
 
-    int ch = getch();
+    const int ch = getch();
     if (ch == ERR)
         return this->_events;
 
