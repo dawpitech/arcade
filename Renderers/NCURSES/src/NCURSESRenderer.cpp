@@ -52,11 +52,13 @@ void arcade::NCursesRenderer::setWindowTitle(const std::string& title)
 
 void arcade::NCursesRenderer::render()
 {
-    refresh();
+    wrefresh(this->_window);
 }
 
 void arcade::NCursesRenderer::clear()
 {
+    wclear(this->_window);
+    wrefresh(this->_window);
 }
 
 std::vector<ANAL::Event>& arcade::NCursesRenderer::getEvents()
@@ -67,8 +69,11 @@ std::vector<ANAL::Event>& arcade::NCursesRenderer::getEvents()
     if (ch == ERR)
         return this->_events;
 
-    if (ch == 'q')
-        this->_events.push_back(ANAL::Event::CLOSE);
+    ANAL::Event ev;
+    if (ch == 'q') {
+	ev.type = ANAL::EventType::CLOSE;
+	this->_events.insert(this->_events.end(), ev);
+    }
 
     return this->_events;
 }

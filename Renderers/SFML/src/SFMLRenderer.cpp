@@ -9,6 +9,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "SFMLRenderer.hpp"
+#include "ANAL/Events.hpp"
 #include "ANAL/IModule.hpp"
 
 arcade::SFMLRenderer::SFMLRenderer()
@@ -68,8 +69,11 @@ std::vector<ANAL::Event>& arcade::SFMLRenderer::getEvents()
     sf::Event event{};
     while(_window.pollEvent(event))
     {
-        if (event.type == sf::Event::Closed)
-            this->_events.insert(this->_events.end(), ANAL::Event::CLOSE);
+	ANAL::Event ev;
+        if (event.type == sf::Event::Closed) {
+	    ev.type = ANAL::EventType::CLOSE;
+            this->_events.insert(this->_events.end(), ev);
+	}
     }
     return this->_events;
 }

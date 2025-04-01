@@ -1,5 +1,6 @@
 cmake-build-debug
 build
 *.so
+.cache
 arcade
 compile_commands.json

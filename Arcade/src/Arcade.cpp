@@ -9,6 +9,7 @@
 #include <thread>
 
 #include "Arcade.hpp"
+#include "ANAL/Events.hpp"
 #include "internals/Asset.hpp"
 #include "internals/Entity.hpp"
 
@@ -25,7 +26,7 @@ void Arcade::launch()
     while (this->run)
     {
         for (const auto event : this->_renderer->getEvents())
-            if (event == ANAL::Event::CLOSE)
+	    if (event.type == ANAL::EventType::CLOSE)
                 this->run = false;
         this->_game->processEvents(this->_renderer->getEvents());
 

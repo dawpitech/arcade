@@ -20,7 +20,7 @@ void MainMenu::compute()
     std::cout << "MainMenu is computing" << std::endl;
 }
 
-void MainMenu::render(ANAL::IRenderer& renderer, ANAL::IArcade& arcade)
+void MainMenu::render(ANAL::IRenderer& renderer, const ANAL::IArcade& arcade)
 {
     std::cout << "MainMenu is rendering" << std::endl;
     renderer.clear();

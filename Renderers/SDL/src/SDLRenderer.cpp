@@ -128,8 +128,11 @@ std::vector<ANAL::Event>& arcade::SDLRenderer::getEvents()
     this->_events.clear();
     
     while (SDL_PollEvent(&event)) {
-        if (event.type == SDL_QUIT)
-            this->_events.push_back(ANAL::Event::CLOSE);
+	ANAL::Event ev;
+        if (event.type == SDL_QUIT) {
+	    ev.type = ANAL::EventType::CLOSE;
+            this->_events.insert(this->_events.end(), ev);
+	}
     }
     
     return this->_events;
