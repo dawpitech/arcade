@@ -5,12 +5,14 @@
 ** SDLRenderer.cpp
 */
 
+#include <SDL2/SDL_scancode.h>
 #include <iostream>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 
 #include "SDLRenderer.hpp"
+#include "ANAL/Events.hpp"
 #include "ANAL/IModule.hpp"
 
 arcade::SDLRenderer::SDLRenderer()
@@ -129,13 +131,39 @@ std::vector<ANAL::Event>& arcade::SDLRenderer::getEvents()
     this->_events.clear();
     
     while (SDL_PollEvent(&event)) {
-	ANAL::Event ev;
+        ANAL::Event ev;
+        
         if (event.type == SDL_QUIT) {
-	    ev.type = ANAL::EventType::CLOSE;
+            ev.type = ANAL::EventType::CLOSE;
             this->_events.insert(this->_events.end(), ev);
-	}
+        } else if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
+            ev.type = ANAL::EventType::KEYBOARD;
+            ANAL::KeyEvent keyEvent;
+            keyEvent.state = (event.type == SDL_KEYDOWN) ? ANAL::State::PRESSED : ANAL::State::RELEASED;
+            
+            switch (event.key.keysym.sym) {
+                case SDLK_UP:
+                    keyEvent.key = ANAL::Keys::ARROW_UP;
+                    break;
+                case SDLK_DOWN:
+                    keyEvent.key = ANAL::Keys::ARROW_DOWN;
+                    break;
+                case SDLK_LEFT:
+                    keyEvent.key = ANAL::Keys::ARROW_LEFT;
+                    break;
+                case SDLK_RIGHT:
+                    keyEvent.key = ANAL::Keys::ARROW_RIGHT;
+                    break;
+		case SDLK_r:
+		    keyEvent.key = ANAL::Keys::KEY_R;
+		    break;
+                default:
+                    continue;
+            }
+            ev.keyEvent = keyEvent;
+            this->_events.insert(this->_events.end(), ev);
+        }
     }
-    
     return this->_events;
 }
 

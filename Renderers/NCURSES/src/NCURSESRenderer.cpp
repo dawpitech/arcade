@@ -20,6 +20,7 @@ arcade::NCursesRenderer::NCursesRenderer()
     noecho();
     cbreak();
     curs_set(0);
+    keypad(stdscr, TRUE);
     nodelay(stdscr, TRUE);
     this->_window = stdscr;
 
@@ -63,18 +64,55 @@ void arcade::NCursesRenderer::clear()
 
 std::vector<ANAL::Event>& arcade::NCursesRenderer::getEvents()
 {
+    static std::vector<ANAL::KeyEvent> pressedKeys;
     this->_events.clear();
 
-    const int ch = getch();
-    if (ch == ERR)
-        return this->_events;
+    for (auto it = pressedKeys.begin(); it != pressedKeys.end();) {
+	ANAL::Event ev;
+	ev.type = ANAL::EventType::KEYBOARD;
+	ANAL::KeyEvent keyEvent = *it;
+	keyEvent.state = ANAL::State::RELEASED;
 
-    ANAL::Event ev;
-    if (ch == 'q') {
-	ev.type = ANAL::EventType::CLOSE;
+	ev.keyEvent = keyEvent;
 	this->_events.insert(this->_events.end(), ev);
+	it = pressedKeys.erase(it);
     }
-
+    const int ch = getch();
+    if (ch != ERR) {
+        ANAL::Event ev;
+        if (ch == 'q') {
+            ev.type = ANAL::EventType::CLOSE;
+            this->_events.insert(this->_events.end(), ev);
+        } else {
+            ev.type = ANAL::EventType::KEYBOARD;
+            ANAL::KeyEvent keyEvent;
+            keyEvent.state = ANAL::State::PRESSED;
+            
+            switch (ch) {
+                case KEY_UP:
+                    keyEvent.key = ANAL::Keys::ARROW_UP;
+                    break;
+                case KEY_DOWN:
+                    keyEvent.key = ANAL::Keys::ARROW_DOWN;
+                    break;
+                case KEY_LEFT:
+                    keyEvent.key = ANAL::Keys::ARROW_LEFT;
+                    break;
+                case KEY_RIGHT:
+                    keyEvent.key = ANAL::Keys::ARROW_RIGHT;
+                    break;
+                case 'r':
+                    keyEvent.key = ANAL::Keys::KEY_R;
+                    break;
+                default:
+                    return this->_events;
+            }
+            
+            ev.keyEvent = keyEvent;
+            this->_events.insert(this->_events.end(), ev);
+            pressedKeys.push_back(keyEvent);
+        }
+    } 
     return this->_events;
 }
 

@@ -65,14 +65,40 @@ void arcade::SFMLRenderer::clear()
 
 std::vector<ANAL::Event>& arcade::SFMLRenderer::getEvents()
 {
-    sf::Event event{};
-    while(_window.pollEvent(event))
-    {
-	ANAL::Event ev;
+    sf::Event event;
+    this->_events.clear();
+    while (_window.pollEvent(event)) {
+        ANAL::Event ev;
         if (event.type == sf::Event::Closed) {
-	    ev.type = ANAL::EventType::CLOSE;
+            ev.type = ANAL::EventType::CLOSE;
             this->_events.insert(this->_events.end(), ev);
-	}
+        } else if (event.type == sf::Event::KeyPressed || event.type == sf::Event::KeyReleased) {
+            ev.type = ANAL::EventType::KEYBOARD;
+            ANAL::KeyEvent keyEvent;
+            keyEvent.state = (event.type == sf::Event::KeyPressed) ? ANAL::State::PRESSED : ANAL::State::RELEASED;
+            
+            switch (event.key.code) {
+                case sf::Keyboard::Up:
+                    keyEvent.key = ANAL::Keys::ARROW_UP;
+                    break;
+                case sf::Keyboard::Down:
+                    keyEvent.key = ANAL::Keys::ARROW_DOWN;
+                    break;
+                case sf::Keyboard::Left:
+                    keyEvent.key = ANAL::Keys::ARROW_LEFT;
+                    break;
+                case sf::Keyboard::Right:
+                    keyEvent.key = ANAL::Keys::ARROW_RIGHT;
+                    break;
+                case sf::Keyboard::R:
+                    keyEvent.key = ANAL::Keys::KEY_R;
+                    break;
+                default:
+                    continue;
+            }
+            ev.keyEvent = keyEvent;
+            this->_events.insert(this->_events.end(), ev);
+        }
     }
     return this->_events;
 }

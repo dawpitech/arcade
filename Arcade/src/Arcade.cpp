@@ -25,13 +25,14 @@ void Arcade::launch()
 
     while (this->run)
     {
-        for (const auto event : this->_renderer->getEvents())
+	auto events = this->_renderer->getEvents();
+        for (const auto event : events)
 	    if (event.type == ANAL::EventType::CLOSE)
                 this->run = false;
-        this->_game->processEvents(this->_renderer->getEvents());
+        this->_game->processEvents(events);
 
         // TODO: add proper fps clamping using hardware clock
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
 
         this->_game->compute();
         this->_game->render(*this->_renderer, *this);
