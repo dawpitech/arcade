@@ -28,7 +28,8 @@ arcade::SDLRenderer::SDLRenderer()
         throw Exception();
         
     this->_window = SDL_CreateWindow("Arcade", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 
-                              600, 600, SDL_WINDOW_SHOWN);
+                              WINDOW_SIZE * SCALE_FACTOR, WINDOW_SIZE * SCALE_FACTOR,
+			      SDL_WINDOW_SHOWN);
     if (this->_window == nullptr)
         throw Exception();
         
@@ -66,10 +67,10 @@ void arcade::SDLRenderer::drawEntity(const ANAL::IEntity& entity)
         throw Exception();
         
     SDL_Rect destRect;
-    destRect.x = entity.getPos().x * 40;
-    destRect.y = entity.getPos().y * 40;
-    destRect.w = 40;
-    destRect.h = 40;
+    destRect.x = entity.getPos().x * SCALE_FACTOR;
+    destRect.y = entity.getPos().y * SCALE_FACTOR;
+    destRect.w = SCALE_FACTOR;
+    destRect.h = SCALE_FACTOR;
     
     SDL_RenderCopy(this->_renderer, texture, nullptr, &destRect);
     SDL_DestroyTexture(texture);
@@ -77,7 +78,7 @@ void arcade::SDLRenderer::drawEntity(const ANAL::IEntity& entity)
 
 void arcade::SDLRenderer::drawText(const std::string& str, const ANAL::Vector2<int> pos)
 {
-    TTF_Font* font = TTF_OpenFont("./assets/fonts/Abordage-Regular.ttf", 30);
+    TTF_Font* font = TTF_OpenFont("./assets/fonts/Abordage-Regular.ttf", FONT_SIZE * SCALE_FACTOR);
     if (font == nullptr)
         throw Exception();
         
@@ -97,8 +98,8 @@ void arcade::SDLRenderer::drawText(const std::string& str, const ANAL::Vector2<i
     }
     
     SDL_Rect destRect;
-    destRect.x = pos.x * 40;
-    destRect.y = pos.y * 40;
+    destRect.x = pos.x * SCALE_FACTOR;
+    destRect.y = pos.y * SCALE_FACTOR;
     SDL_QueryTexture(texture, nullptr, nullptr, &destRect.w, &destRect.h);
     
     SDL_RenderCopy(this->_renderer, texture, nullptr, &destRect);

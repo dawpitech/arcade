@@ -13,7 +13,7 @@
 #include "ANAL/IModule.hpp"
 
 arcade::SFMLRenderer::SFMLRenderer()
-    : _window(sf::VideoMode(600, 600), "Arcade")
+    : _window(sf::VideoMode(WINDOW_SIZE * SCALE_FACTOR, WINDOW_SIZE * SCALE_FACTOR), "Arcade")
     , _events({})
 {
     std::cout << "SFML Init" << std::endl;
@@ -31,9 +31,8 @@ void arcade::SFMLRenderer::drawEntity(const ANAL::IEntity& entity)
     if (!texture.loadFromFile(entity.getAsset().getTexturePath()))
         throw Exception();
     sf::Sprite sfSprite(texture);
-    sfSprite.setPosition(static_cast<float>(entity.getPos().x)*40,
-        static_cast<float>(entity.getPos().y)*40);
-    sfSprite.setScale(4, 4);
+    sfSprite.setPosition(static_cast<float>(entity.getPos().x * SCALE_FACTOR),
+			 static_cast<float>(entity.getPos().y * SCALE_FACTOR));
     this->_window.draw(sfSprite);
 }
 
@@ -43,8 +42,8 @@ void arcade::SFMLRenderer::drawText(const std::string& str,
     sf::Font font;
     if (!font.loadFromFile("./assets/fonts/Abordage-Regular.ttf"))
         throw Exception();
-    sf::Text text(str, font, 30);
-    text.setPosition(static_cast<float>(pos.x)*40, static_cast<float>(pos.y)*40);
+    sf::Text text(str, font, FONT_SIZE * SCALE_FACTOR);
+    text.setPosition(static_cast<float>(pos.x) * SCALE_FACTOR, static_cast<float>(pos.y) * SCALE_FACTOR);
     text.setFillColor(sf::Color::White);
     this->_window.draw(text);
 }

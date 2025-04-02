@@ -10,6 +10,9 @@
 
     #include <SDL2/SDL.h>
     #include <ANAL/IRenderer.hpp>
+    #define SCALE_FACTOR 16
+    #define WINDOW_SIZE 32
+    #define FONT_SIZE 1
 
 namespace arcade
 {
