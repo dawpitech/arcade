@@ -14,8 +14,8 @@
 arcade::NCursesRenderer::NCursesRenderer()
     : _window(nullptr)
     , _events({})
+    , _screen(newterm(nullptr, stdout, stdin))
 {
-    initscr();
     raw();
     noecho();
     cbreak();
@@ -32,6 +32,7 @@ arcade::NCursesRenderer::~NCursesRenderer()
 {
     endwin();
     delwin(this->_window);
+    set_term(this->_screen);
     std::cout.rdbuf(this->_backupbuffer);
 }
 

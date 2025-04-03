@@ -35,6 +35,7 @@ namespace arcade
             std::streambuf* _backupbuffer;
             std::ofstream _nullstream{"/dev/null"};
             std::vector<ANAL::Event> _events;
+            SCREEN* _screen;
     };
 }
 
