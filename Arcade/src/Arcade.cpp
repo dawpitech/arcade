@@ -85,7 +85,7 @@ void Arcade::handleHotKeys(std::vector<ANAL::Event>& events)
         if (events[x].type == ANAL::EventType::KEYBOARD && events[x].keyEvent.value().key == ANAL::Keys::KEY_N) {
             //printf("loading game id %lu\n", this->_game_idx);
             auto new_handle = SafeDL::open("./lib/" + this->_games.at(this->_game_idx), RTLD_LAZY);
-            this->_game_idx += (this->_game_idx + 1) % this->_games.size();
+            this->_game_idx = (this->_game_idx + 1) % this->_games.size();
             this->_game = ModuleLoader::loadGame(new_handle);
             this->_game_so_handle.swap(new_handle);
             events.erase(events.begin() + x);
@@ -93,7 +93,7 @@ void Arcade::handleHotKeys(std::vector<ANAL::Event>& events)
         if (events[x].type == ANAL::EventType::KEYBOARD && events[x].keyEvent.value().key == ANAL::Keys::KEY_B) {
             //printf("loading renderer id %lu\n", this->_renderer_idx);
             auto new_handle = SafeDL::open("./lib/" + this->_renderers.at(this->_renderer_idx), RTLD_LAZY);
-            this->_renderer_idx += (this->_renderer_idx + 1) % this->_renderers.size();
+            this->_renderer_idx = (this->_renderer_idx + 1) % this->_renderers.size();
             this->_renderer = ModuleLoader::loadRenderer(new_handle);
             this->_renderer_so_handle.swap(new_handle);
             events.erase(events.begin() + x);
