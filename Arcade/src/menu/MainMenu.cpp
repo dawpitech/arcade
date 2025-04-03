@@ -10,19 +10,20 @@
 #include "MainMenu.hpp"
 #include "ANAL/IModule.hpp"
 
-void MainMenu::processEvents(std::vector<ANAL::Event>&)
+void MainMenu::processEvents(std::vector<ANAL::Event>& events)
 {
-    std::cout << "MainMenu is processing Events" << std::endl;
+    while (!events.empty()) {
+        //const auto event = events.back();
+        events.pop_back();
+    }
 }
 
 void MainMenu::compute()
 {
-    std::cout << "MainMenu is computing" << std::endl;
 }
 
 void MainMenu::render(ANAL::IRenderer& renderer, const ANAL::IArcade& arcade)
 {
-    std::cout << "MainMenu is rendering" << std::endl;
     renderer.clear();
     renderer.setWindowTitle("Main Menu - Arcade");
     renderer.drawText("Arcade menu", ANAL::Vector2(0, 0));
@@ -31,7 +32,7 @@ void MainMenu::render(ANAL::IRenderer& renderer, const ANAL::IArcade& arcade)
     auto const entity = arcade.newEntity();
     auto const asset = arcade.newAsset();
     asset->setTexturePath("./assets/textures/test.png");
-    asset->setAlternateRender('O');
+    asset->setAlternateRender('X');
     entity->setPos(ANAL::Vector2(0, 0));
     entity->setAsset(*asset);
     renderer.drawEntity(*entity);

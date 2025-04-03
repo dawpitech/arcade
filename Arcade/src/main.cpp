@@ -17,6 +17,7 @@ int main(const int argc, const char** argv)
     Arcade arcade;
     std::unique_ptr<ANAL::IGame> menu = std::make_unique<MainMenu>();
 
+    arcade.scanForModules();
     if (argc != 2)
         return Arcade::printHelp(), EXIT_FAILURE_TECH;
     try

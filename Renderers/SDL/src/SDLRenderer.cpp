@@ -154,6 +154,12 @@ std::vector<ANAL::Event>& arcade::SDLRenderer::getEvents()
                 case SDLK_RIGHT:
                     keyEvent.key = ANAL::Keys::ARROW_RIGHT;
                     break;
+                case SDLK_n:
+                    keyEvent.key = ANAL::Keys::KEY_N;
+                    break;
+                case SDLK_b:
+                    keyEvent.key = ANAL::Keys::KEY_B;
+                break;
 		case SDLK_r:
 		    keyEvent.key = ANAL::Keys::KEY_R;
 		    break;

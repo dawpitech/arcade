@@ -28,9 +28,14 @@ class Arcade final : public ANAL::IArcade
 
         static void printHelp();
         void launch();
+        void scanForModules();
+        void handleHotKeys(std::vector<ANAL::Event>&);
 
         void setGame(std::unique_ptr<ANAL::IGame>&);
         void setRenderer(std::unique_ptr<ANAL::IRenderer>&);
+
+        void addToGameList(const std::string&);
+        void addToRendererList(const std::string&);
 
         [[nodiscard]] std::unique_ptr<ANAL::IAsset> newAsset() const override;
         [[nodiscard]] std::unique_ptr<ANAL::IEntity> newEntity() const override;
@@ -41,6 +46,12 @@ class Arcade final : public ANAL::IArcade
     private:
         std::unique_ptr<ANAL::IGame> _game;
         std::unique_ptr<ANAL::IRenderer> _renderer;
+        std::vector<std::string> _games;
+        std::size_t _game_idx = 0;
+        std::vector<std::string> _renderers;
+        std::size_t _renderer_idx = 0;
         bool run = true;
+
+        static bool str_ends_with(const std::string&, const std::string&);
 };
 #endif //ARCADE_HPP
