@@ -29,7 +29,7 @@ class Arcade final : public ANAL::IArcade
         static void printHelp();
         void launch();
         void scanForModules();
-        void handleHotKeys(std::vector<ANAL::Event>&);
+        void handleHotKeys(const std::vector<ANAL::Event>&);
 
         void setGame(std::unique_ptr<ANAL::IGame>&);
         void setRenderer(std::unique_ptr<ANAL::IRenderer>&);

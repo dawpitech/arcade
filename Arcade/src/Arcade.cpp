@@ -25,9 +25,8 @@ void Arcade::launch()
     if (this->_game == nullptr || this->_renderer == nullptr)
         throw std::exception();
 
-    while (this->run)
-    {
-	    auto& events = this->_renderer->getEvents();
+    while (this->run) {
+	    auto events = this->_renderer->getEvents();
         this->handleHotKeys(events);
         this->_game->processEvents(events);
 
@@ -36,7 +35,6 @@ void Arcade::launch()
 
         this->_game->compute();
         this->_game->render(*this->_renderer, *this);
-
     }
 }
 
@@ -74,29 +72,31 @@ void Arcade::scanForModules()
     //printf("Renderers: %lu\n", this->_renderers.size());
 }
 
-void Arcade::handleHotKeys(std::vector<ANAL::Event>& events)
+void Arcade::handleHotKeys(const std::vector<ANAL::Event>& events)
 {
-    auto events_cpy = events;
-
-    for (int x = 0; x < events.size(); x++)
+    for (const auto &[type, keyEvent, mouseEvent, closeEvent] : events)
     {
-        if (events[x].type == ANAL::EventType::CLOSE)
+        if (type == ANAL::EventType::CLOSE)
             this->run = false;
-        if (events[x].type == ANAL::EventType::KEYBOARD && events[x].keyEvent.value().key == ANAL::Keys::KEY_N) {
+        if (type == ANAL::EventType::KEYBOARD && keyEvent.value().key == ANAL::Keys::KEY_N) {
             //printf("loading game id %lu\n", this->_game_idx);
             auto new_handle = SafeDL::open("./lib/" + this->_games.at(this->_game_idx), RTLD_LAZY);
             this->_game_idx = (this->_game_idx + 1) % this->_games.size();
+            this->_game.reset();
             this->_game = ModuleLoader::loadGame(new_handle);
+            this->_game_so_handle.reset();
             this->_game_so_handle.swap(new_handle);
-            events.erase(events.begin() + x);
+            return;
         }
-        if (events[x].type == ANAL::EventType::KEYBOARD && events[x].keyEvent.value().key == ANAL::Keys::KEY_B) {
+        if (type == ANAL::EventType::KEYBOARD && keyEvent.value().key == ANAL::Keys::KEY_B) {
             //printf("loading renderer id %lu\n", this->_renderer_idx);
             auto new_handle = SafeDL::open("./lib/" + this->_renderers.at(this->_renderer_idx), RTLD_LAZY);
             this->_renderer_idx = (this->_renderer_idx + 1) % this->_renderers.size();
+            this->_renderer.reset();
             this->_renderer = ModuleLoader::loadRenderer(new_handle);
-            this->_renderer_so_handle.swap(new_handle);
-            events.erase(events.begin() + x);
+            this->_renderer_so_handle.reset();
+            this->_renderer_so_handle = std::move(new_handle);
+            return;
         }
     }
 }
