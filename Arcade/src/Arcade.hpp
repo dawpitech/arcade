@@ -40,6 +40,9 @@ class Arcade final : public ANAL::IArcade
         [[nodiscard]] std::unique_ptr<ANAL::IAsset> newAsset() const override;
         [[nodiscard]] std::unique_ptr<ANAL::IEntity> newEntity() const override;
 
+        [[nodiscard]] const std::vector<std::string>& getGamesList() const;
+        void launchGame(int idx);
+
         SafeDL::safeHandle _game_so_handle;
         SafeDL::safeHandle _renderer_so_handle;
 

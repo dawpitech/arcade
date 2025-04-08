@@ -19,5 +19,9 @@ class MainMenu final : public ANAL::IGame
         void processEvents(std::vector<ANAL::Event>&) override;
         void compute() override;
         void render(ANAL::IRenderer& renderer, const ANAL::IArcade& arcade) override;
+
+    private:
+        int selected_game = 0;
+        bool launching = false;
 };
 #endif //MAINMENU_HPP

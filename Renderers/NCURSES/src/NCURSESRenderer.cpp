@@ -111,6 +111,9 @@ std::vector<ANAL::Event>& arcade::NCursesRenderer::getEvents()
                 case 'n':
                     keyEvent.key = ANAL::Keys::KEY_N;
                     break;
+                case 'e':
+                    keyEvent.key = ANAL::Keys::KEY_E;
+                    break;
                 default:
                     return this->_events;
             }

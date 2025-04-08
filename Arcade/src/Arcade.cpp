@@ -17,7 +17,7 @@
 
 void Arcade::printHelp()
 {
-    std::cout << "USAGE: ./arcade </path/to/a/renderer.so>" << std::endl;
+    std::cout << "USAGE: ./arcade <renderer.so>" << std::endl;
 }
 
 void Arcade::launch()
@@ -129,4 +129,18 @@ std::unique_ptr<ANAL::IAsset> Arcade::newAsset() const
 std::unique_ptr<ANAL::IEntity> Arcade::newEntity() const
 {
     return std::make_unique<Entity>();
+}
+
+const std::vector<std::string> &Arcade::getGamesList() const
+{
+    return this->_games;
+}
+
+void Arcade::launchGame(const int idx)
+{
+    this->_game_idx = idx;
+    auto new_handle = SafeDL::open("./lib/" + this->_games.at(this->_game_idx), RTLD_LAZY);
+    this->_game_idx = (this->_game_idx + 1) % this->_games.size();
+    this->_game = ModuleLoader::loadGame(new_handle);
+    this->_game_so_handle.swap(new_handle);
 }

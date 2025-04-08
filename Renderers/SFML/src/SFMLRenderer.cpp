@@ -99,6 +99,9 @@ std::vector<ANAL::Event>& arcade::SFMLRenderer::getEvents()
                 case sf::Keyboard::N:
                     keyEvent.key = ANAL::Keys::KEY_N;
                     break;
+                case sf::Keyboard::E:
+                    keyEvent.key = ANAL::Keys::KEY_E;
+                    break;
                 default:
                     continue;
             }
