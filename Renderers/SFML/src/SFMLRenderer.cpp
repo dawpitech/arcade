@@ -16,13 +16,13 @@ arcade::SFMLRenderer::SFMLRenderer()
     : _window(sf::VideoMode(WINDOW_SIZE * SCALE_FACTOR, WINDOW_SIZE * SCALE_FACTOR), "Arcade")
     , _events({})
 {
-    std::cout << "SFML Init" << std::endl;
+    //std::cout << "SFML Init" << std::endl;
 }
 
 arcade::SFMLRenderer::~SFMLRenderer()
 {
     this->_window.close();
-    std::cout << "SFML Destroyed" << std::endl;
+    //std::cout << "SFML Destroyed" << std::endl;
 }
 
 void arcade::SFMLRenderer::drawEntity(const ANAL::IEntity& entity)

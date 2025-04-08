@@ -39,7 +39,7 @@ arcade::SDLRenderer::SDLRenderer()
     if (this->_renderer == nullptr)
         throw Exception();
         
-    std::cout << "SDL Init" << std::endl;
+    //std::cout << "SDL Init" << std::endl;
 }
 
 arcade::SDLRenderer::~SDLRenderer()
@@ -53,7 +53,7 @@ arcade::SDLRenderer::~SDLRenderer()
     IMG_Quit();
     SDL_Quit();
     
-    std::cout << "SDL Destroyed" << std::endl;
+    //std::cout << "SDL Destroyed" << std::endl;
 }
 
 void arcade::SDLRenderer::drawEntity(const ANAL::IEntity& entity)
