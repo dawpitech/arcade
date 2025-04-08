@@ -25,19 +25,18 @@ void MainMenu::processEvents(std::vector<ANAL::Event>& events)
     events.clear();
 }
 
-void MainMenu::compute()
+void MainMenu::compute(ANAL::IArcade& arcade)
 {
+    const auto& my_arcade = dynamic_cast<const Arcade&>(arcade);
+    this->selected_game = std::clamp(this->selected_game, 0, static_cast<int>(my_arcade.getGamesList().size()) - 1);
+
+    if (this->launching)
+        const_cast<Arcade&>(my_arcade).launchGame(this->selected_game);
 }
 
 void MainMenu::render(ANAL::IRenderer& renderer, const ANAL::IArcade& arcade)
 {
     const auto& my_arcade = dynamic_cast<const Arcade&>(arcade);
-    this->selected_game = std::clamp(this->selected_game, 0, static_cast<int>(my_arcade.getGamesList().size()) - 1);
-
-    if (this->launching) {
-        const_cast<Arcade&>(my_arcade).launchGame(this->selected_game);
-        return;
-    }
 
     renderer.clear();
     renderer.setWindowTitle("Main Menu - Arcade");

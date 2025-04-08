@@ -26,15 +26,16 @@ void Arcade::launch()
         throw std::exception();
 
     while (this->run) {
+        const auto now = std::chrono::system_clock::now();
+        const auto needed = now + std::chrono::operator ""ms(33);
+
 	    auto events = this->_renderer->getEvents();
         this->handleHotKeys(events);
         this->_game->processEvents(events);
-
-        // TODO: add proper fps clamping using hardware clock
-        std::this_thread::sleep_for(std::chrono::milliseconds(20));
-
-        this->_game->compute();
+        this->_game->compute(*this);
         this->_game->render(*this->_renderer, *this);
+
+        std::this_thread::sleep_until(needed);
     }
 }
 
@@ -143,4 +144,19 @@ void Arcade::launchGame(const int idx)
     this->_game_idx = (this->_game_idx + 1) % this->_games.size();
     this->_game = ModuleLoader::loadGame(new_handle);
     this->_game_so_handle.swap(new_handle);
+}
+
+const std::string &Arcade::getPlayerName() const
+{
+    return this->_playerName;
+}
+
+void Arcade::setPlayerHighscore(int score)
+{
+    return;
+}
+
+int Arcade::getPlayerHighscore(const std::string &playerName) const
+{
+    return 9999;
 }

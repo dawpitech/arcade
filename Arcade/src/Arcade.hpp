@@ -40,6 +40,10 @@ class Arcade final : public ANAL::IArcade
         [[nodiscard]] std::unique_ptr<ANAL::IAsset> newAsset() const override;
         [[nodiscard]] std::unique_ptr<ANAL::IEntity> newEntity() const override;
 
+        [[nodiscard]] const std::string &getPlayerName() const override;
+        void setPlayerHighscore(int score) override;
+        [[nodiscard]] int getPlayerHighscore(const std::string &playerName) const override;
+
         [[nodiscard]] const std::vector<std::string>& getGamesList() const;
         void launchGame(int idx);
 
@@ -54,6 +58,7 @@ class Arcade final : public ANAL::IArcade
         std::vector<std::string> _renderers;
         std::size_t _renderer_idx = 0;
         bool run = true;
+        std::string _playerName = "UNKN";
 
         static bool str_ends_with(const std::string&, const std::string&);
 };
