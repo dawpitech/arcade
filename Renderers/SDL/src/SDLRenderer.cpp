@@ -173,7 +173,7 @@ std::vector<ANAL::Event>& arcade::SDLRenderer::getEvents()
         else if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP) {
             ev.type = ANAL::EventType::MOUSE;
             ANAL::MouseEvent mouseEvent{{0, 0}, ANAL::MouseKeys::LEFT_CLICK, ANAL::State::PRESSED};
-            mouseEvent.coords = { event.button.x, event.button.y };
+            mouseEvent.coords = { event.button.x / 16, event.button.y / 16};
             mouseEvent.state = (event.type == SDL_MOUSEBUTTONDOWN) ? ANAL::State::PRESSED : ANAL::State::RELEASED;
 
             switch (event.button.button) {
