@@ -136,11 +136,12 @@ std::vector<ANAL::Event>& arcade::SDLRenderer::getEvents()
         if (event.type == SDL_QUIT) {
             ev.type = ANAL::EventType::CLOSE;
             this->_events.insert(this->_events.end(), ev);
-        } else if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
+        } 
+        else if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
             ev.type = ANAL::EventType::KEYBOARD;
             ANAL::KeyEvent keyEvent;
             keyEvent.state = (event.type == SDL_KEYDOWN) ? ANAL::State::PRESSED : ANAL::State::RELEASED;
-            
+
             switch (event.key.keysym.sym) {
                 case SDLK_UP:
                     keyEvent.key = ANAL::Keys::ARROW_UP;
@@ -159,17 +160,40 @@ std::vector<ANAL::Event>& arcade::SDLRenderer::getEvents()
                     break;
                 case SDLK_b:
                     keyEvent.key = ANAL::Keys::KEY_B;
-                break;
-		case SDLK_r:
-		    keyEvent.key = ANAL::Keys::KEY_R;
-		    break;
+                    break;
+                case SDLK_r:
+                    keyEvent.key = ANAL::Keys::KEY_R;
+                    break;
                 default:
                     continue;
             }
             ev.keyEvent = keyEvent;
             this->_events.insert(this->_events.end(), ev);
+        } 
+        else if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP) {
+            ev.type = ANAL::EventType::MOUSE;
+            ANAL::MouseEvent mouseEvent{{0, 0}, ANAL::MouseKeys::LEFT_CLICK, ANAL::State::PRESSED};
+            mouseEvent.coords = { event.button.x, event.button.y };
+            mouseEvent.state = (event.type == SDL_MOUSEBUTTONDOWN) ? ANAL::State::PRESSED : ANAL::State::RELEASED;
+
+            switch (event.button.button) {
+                case SDL_BUTTON_LEFT:
+                    mouseEvent.key = ANAL::MouseKeys::LEFT_CLICK;
+                    break;
+                case SDL_BUTTON_MIDDLE:
+                    mouseEvent.key = ANAL::MouseKeys::MIDDLE_CLICK;
+                    break;
+                case SDL_BUTTON_RIGHT:
+                    mouseEvent.key = ANAL::MouseKeys::RIGHT_CLICK;
+                    break;
+                default:
+                    continue;
+            }
+            ev.mouseEvent = mouseEvent;
+            this->_events.insert(this->_events.end(), ev);
         }
     }
+
     return this->_events;
 }
 
