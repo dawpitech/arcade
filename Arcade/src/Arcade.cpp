@@ -78,7 +78,7 @@ void Arcade::handleHotKeys(const std::vector<ANAL::Event>& events)
     {
         if (type == ANAL::EventType::CLOSE)
             this->run = false;
-        if (type == ANAL::EventType::KEYBOARD && keyEvent.value().key == ANAL::Keys::KEY_N) {
+        if (type == ANAL::EventType::KEYBOARD && keyEvent.value().key == ANAL::Keys::KEY_N && keyEvent.value().state == ANAL::State::PRESSED) {
             //printf("loading game id %lu\n", this->_game_idx);
             auto new_handle = SafeDL::open("./lib/" + this->_games.at(this->_game_idx), RTLD_LAZY);
             this->_game_idx = (this->_game_idx + 1) % this->_games.size();
@@ -88,7 +88,7 @@ void Arcade::handleHotKeys(const std::vector<ANAL::Event>& events)
             this->_game_so_handle.swap(new_handle);
             return;
         }
-        if (type == ANAL::EventType::KEYBOARD && keyEvent.value().key == ANAL::Keys::KEY_B) {
+        if (type == ANAL::EventType::KEYBOARD && keyEvent.value().key == ANAL::Keys::KEY_B && keyEvent.value().state == ANAL::State::PRESSED) {
             //printf("loading renderer id %lu\n", this->_renderer_idx);
             auto new_handle = SafeDL::open("./lib/" + this->_renderers.at(this->_renderer_idx), RTLD_LAZY);
             this->_renderer_idx = (this->_renderer_idx + 1) % this->_renderers.size();
