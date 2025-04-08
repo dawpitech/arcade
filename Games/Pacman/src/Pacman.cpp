@@ -54,8 +54,9 @@ void Game::deinit() { this->m_ghosts.clear(); }
 void Game::init()
 {
     this->m_player = Player();
+    this->m_player_name = "";
     this->_pacmanmap = pacmanmap_org;
-    this->m_time_ghosts = 0; // 280;
+    this->m_time_ghosts = 280; // 280;
     this->m_ghosts.emplace_back(ANAL::Vector2(15, 14), "red");
     this->m_ghosts.emplace_back(ANAL::Vector2(16, 14), "blue");
     this->m_ghosts.emplace_back(ANAL::Vector2(15, 16), "pink");
@@ -70,7 +71,7 @@ void Game::restart()
 
 Game::Game()
 {
-    this->m_best_score = 0;
+    this->m_best_score = -1;
     this->init();
 }
 
@@ -136,12 +137,18 @@ void Game::processEvents(std::vector<ANAL::Event> &ev)
     this->m_player.setPos(ANAL::Vector2{this->m_player.getPos().x + add_x, this->m_player.getPos().y + add_y});
 }
 
-void Game::compute()
+void Game::compute(ANAL::IArcade &arcade)
 {
+    if (this->m_player_name == "")
+	this->m_player_name = arcade.getPlayerName();
+    if (this->m_best_score == -1)
+	this->m_best_score = arcade.getPlayerHighscore(this->m_player_name);
     if (this->m_player.getState() == Player::DEAD)
     {
-        if (this->m_player.getScore() > this->m_best_score)
+        if (this->m_player.getScore() > this->m_best_score) {
             this->m_best_score = this->m_player.getScore();
+	    arcade.setPlayerHighscore(this->m_best_score);
+	}
         return;
     }
 

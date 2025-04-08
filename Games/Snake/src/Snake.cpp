@@ -10,6 +10,7 @@
 #include <random>
 #include <string>
 #include "ANAL/Events.hpp"
+#include "ANAL/IArcade.hpp"
 #include "ANAL/IModule.hpp"
 #include "ANAL/Vector2.hpp"
 
@@ -56,8 +57,9 @@ void Game::deinit()
 
 void Game::init()
 {
+    this->m_player_name = "";
     this->m_game_ended = false;
-    this->m_bestscore = 0;
+    this->m_bestscore = -1;
     this->m_score = 0;
     this->m_berrypos = {10, 10};
     this->_snakemap = snakmap_org;
@@ -101,8 +103,12 @@ void Game::processEvents(std::vector<ANAL::Event> &ev)
     }
 }
 
-void Game::compute()
+void Game::compute(ANAL::IArcade &arcade)
 {
+    if (this->m_player_name == "")
+	this->m_player_name = arcade.getPlayerName();
+    if (this->m_bestscore == -1)
+	this->m_bestscore = arcade.getPlayerHighscore(this->m_player_name);
     if (this->m_game_ended) return;
 
     static int frame = 0;

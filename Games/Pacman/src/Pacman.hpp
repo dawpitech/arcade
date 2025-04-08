@@ -7,6 +7,7 @@
 
 #include <list>
 #include <tuple>
+#include "ANAL/IArcade.hpp"
 #include "ANAL/IGame.hpp"
 #include "ANAL/Vector2.hpp"
 #define MAP_SIZE 32
@@ -92,7 +93,7 @@ class Game : public ANAL::IGame
 	~Game() override;
 
 	void processEvents(std::vector<ANAL::Event>&) override;
-	void compute() override;
+	void compute(ANAL::IArcade& arcade) override;
 	void render(ANAL::IRenderer& renderer, const ANAL::IArcade& arcade) override;
 
     private:
@@ -102,6 +103,7 @@ class Game : public ANAL::IGame
 
 	std::vector<std::string> _pacmanmap;
 	Player m_player;
+	std::string m_player_name;
 	int m_time_ghosts = 0;
 	int m_best_score;
 	std::vector<Ghost> m_ghosts;
