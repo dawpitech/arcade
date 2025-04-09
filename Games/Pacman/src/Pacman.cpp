@@ -83,40 +83,39 @@ void Game::processEvents(std::vector<ANAL::Event> &ev)
     static int add_x = 0;
     static int add_y = 0;
 
-    for (auto e : ev)
+    for (const auto &[type, keyEvent, mouseEvent, closeEvent] : ev)
     {
-        switch (e.type)
-        {
-            case ANAL::EventType::KEYBOARD:
-                {
-                    auto key = e.keyEvent.value().key;
-                    auto down = e.keyEvent.value().state == ANAL::State::RELEASED;
-                    if (key == ANAL::Keys::ARROW_UP)
-                        add_y = down ? 0 : -1;
-                    if (key == ANAL::Keys::ARROW_DOWN)
-                        add_y = down ? 0 : +1;
-                    if (key == ANAL::Keys::ARROW_LEFT)
-                    {
-                        add_x = down ? 0 : -1;
-                        this->m_player.setLook(Player::LEFT);
-                    }
-                    if (key == ANAL::Keys::ARROW_RIGHT)
-                    {
-                        add_x = down ? 0 : +1;
-                        this->m_player.setLook(Player::RIGHT);
-                    }
-                    if (key == ANAL::Keys::KEY_R && this->m_player.getState() == Player::DEAD)
-                        this->restart();
-                    break;
-                }
+        if (type != ANAL::EventType::KEYBOARD)
+            continue;
+        const auto key = keyEvent.value().key;
+        const auto down = keyEvent.value().state == ANAL::State::RELEASED;
+
+        switch (key) {
+            case ANAL::Keys::ARROW_UP:
+                add_y = down ? 0 : -1;
+                break;
+            case ANAL::Keys::ARROW_DOWN:
+                add_y = down ? 0 : +1;
+                break;
+            case ANAL::Keys::ARROW_LEFT:
+                add_x = down ? 0 : -1;
+                this->m_player.setLook(Player::LEFT);
+                break;
+            case ANAL::Keys::ARROW_RIGHT:
+                add_x = down ? 0 : +1;
+                this->m_player.setLook(Player::RIGHT);
+                break;
+            case ANAL::Keys::KEY_R:
+                if (this->m_player.getState() != Player::DEAD)
+                    continue;
+                this->restart();
+                break;
             default:
                 break;
         }
     }
     if (frame++ < 1 || this->m_player.getState() == Player::DEAD)
-    {
         return;
-    }
     frame = 0;
     int new_x = (this->m_player.getPos().x + add_x) - 1;
     int new_y = (this->m_player.getPos().y + add_y);
@@ -140,15 +139,16 @@ void Game::processEvents(std::vector<ANAL::Event> &ev)
 void Game::compute(ANAL::IArcade &arcade)
 {
     if (this->m_player_name == "")
-	this->m_player_name = arcade.getPlayerName();
+        this->m_player_name = arcade.getPlayerName();
     if (this->m_best_score == -1)
-	this->m_best_score = arcade.getPlayerHighscore(this->m_player_name);
+        this->m_best_score = arcade.getPlayerHighscore(this->m_player_name);
     if (this->m_player.getState() == Player::DEAD)
     {
-        if (this->m_player.getScore() > this->m_best_score) {
+        if (this->m_player.getScore() > this->m_best_score)
+        {
             this->m_best_score = this->m_player.getScore();
-	    arcade.setPlayerHighscore(this->m_best_score);
-	}
+            arcade.setPlayerHighscore(this->m_best_score);
+        }
         return;
     }
 
