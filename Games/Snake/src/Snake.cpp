@@ -208,7 +208,7 @@ void Game::render(ANAL::IRenderer &renderer, const ANAL::IArcade &arcade)
         if ((frame / 20) % 2 == 0)
         {
             renderer.drawText(" Game Over", ANAL::Vector2(13, 13));
-            renderer.drawText("Player: AAAA", ANAL::Vector2(13, 14));
+            renderer.drawText("Player: " + this->m_player_name, ANAL::Vector2(13, 14));
             renderer.drawText("Score: " + std::to_string(this->m_score), ANAL::Vector2(13, 15));
             renderer.drawText("Best: " + std::to_string(this->m_bestscore), ANAL::Vector2(13, 16));
             renderer.drawText("Press R to restart", ANAL::Vector2(12, 17));
