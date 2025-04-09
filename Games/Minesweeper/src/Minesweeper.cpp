@@ -10,17 +10,21 @@
 #include "ANAL/Events.hpp"
 #include "ANAL/IModule.hpp"
 #include "ANAL/Vector2.hpp"
+#include <iostream>
 
 void Minesweeper::Game::init()
 {
     this->_board = Board();
-    this->_flags = 10;
+    this->m_state = EMPTY_MAP;
+    this->m_click = UNKNOWN;
+    this->_flags = NUMBER_OF_BOMBS;
 }
 
 void Minesweeper::Game::restart()
 {
     this->_board.clearMap();
-    this->_flags = 10;
+    this->_coor = {0, 0};
+    this->_flags = NUMBER_OF_BOMBS;
     this->_board.initializeMap();
 }
 
@@ -40,11 +44,11 @@ void Minesweeper::Game::processEvents(std::vector<ANAL::Event> &ev)
                 auto mouse = e.mouseEvent.value().key;
                 auto click_mouse = e.mouseEvent.value().state == ANAL::State::RELEASED;
                 if (mouse == ANAL::MouseKeys::LEFT_CLICK) {
-                    _left = click_mouse ? true : false;
+                    this->m_click = LEFT;
                     _new_coor = e.mouseEvent.value().coords;
                 }
                 if (mouse == ANAL::MouseKeys::RIGHT_CLICK) {
-                    _right == click_mouse ? true : false;
+                    this->m_click = RIGHT;
                     _new_coor = e.mouseEvent.value().coords;
                 }
                 break;
@@ -62,42 +66,83 @@ void Minesweeper::Game::processEvents(std::vector<ANAL::Event> &ev)
                 auto key = e.keyEvent.value().key;
                 auto down = e.keyEvent.value().state == ANAL::State::RELEASED;
                 if (key == ANAL::Keys::KEY_R)
-                    this->restart();
+                    this->m_state = RESTART;
                 break;
             }
             default:
                 break;
         }
     }
-    this->_leftKey = _left;
-    this->_rightKey = _right;
+    if (this->getState() == HAS_RESTART || this->getState() == DEFEAT) {
+        this->_coor = {0,0};
+        this->m_click = UNKNOWN;
+        if (this->getState() == HAS_RESTART)
+            this->m_state = WORKS;
+        if (this->getState() == DEFEAT)
+            this->m_state = DEFEAT;
+        return;
+    }
     this->_coor = _new_coor;
-    printf("coor.y -> %d | coor.x -> %d\n", this->_coor.y, this->_coor.x);
+    this->_coor.x = this->_coor.x - 1;
+    this->_coor.y = this->_coor.y - 7;
+    if ((this->_coor.x < 0 || this->_coor.y < 0) || (this->_coor.x > SIZE_ARRAY_CELL - 1 || this->_coor.y > SIZE_ARRAY_ROW - 1)) {
+        this->m_click = UNKNOWN;
+        return;
+    }
 }
 
 void Minesweeper::Game::compute(ANAL::IArcade& arcade) {
-    if (this->_leftKey == true) {
-        printf("isbomb -> %b\n", this->_board.isBomb(this->_coor));
-        if (this->_board.isBomb(this->_coor) == true) {
-            toVisible(this->_coor.x, this->_coor.y);
-            printf("getvisible -> %b\n", this->_map[this->_coor.y][this->_coor.x].getVisible());
-        }
-        toVisible(this->_coor.x, this->_coor.y);
+    if (this->getState() == DEFEAT) {
+        this->_board.mapVisible();
+        this->_mapDisplay = this->_board.mapToDisplay();
+        return;
     }
-    if (this->_rightKey == true) {
-        if (this->_board.isFlag(this->_coor) == true) {
-            this->_board.setFlag(true);
-            this->_flags = this->_flags - 1;
-            this->_bombflagged = this->_bombflagged + 1;
-            toVisible(this->_coor.x, this->_coor.y);
+    if (this->getState() == RESTART) {
+        this->restart();
+        this->_fClick = true;
+        this->m_state = HAS_RESTART;
+        return;
+    }
+    if (this->m_click == UNKNOWN) {
+        this->_mapDisplay = this->_board.mapToDisplay();
+        return;
+    }
+    if (this->getClick() == LEFT && this->getState() == WORKS) {
+        if (this->_board.isBomb(this->_coor) == true && this->_fClick == true) {
+            this->restart();
+            return;
+        }
+        this->_fClick = false;
+        if (this->_board.isBomb(this->_coor) == true)
+            this->m_state = DEFEAT;
+        this->_board.toVisible(this->_coor.x, this->_coor.y);
+    }
+    if (this->getClick() == RIGHT && this->getState() == WORKS) {
+        this->_fClick = false;
+        if (this->_board.isVisible(this->_coor) == true)
+            return;
+        if (this->_board.isFlag(this->_coor) == false) {
+            this->_board.toFlag(this->_coor.x, this->_coor.y);
+            this->_flags -= 1;
+            this->_bombflagged += this->bBF();
         }
     }
-    this->_mapDisplay = this->_board.mapToDisplay(this->_map);
+    if (this->_fClick == true && this->_board.bombDiscover() == true) {
+        this->restart();
+        return;
+    }
+    this->_mapDisplay = this->_board.mapToDisplay();
 }
 
 void Minesweeper::Game::render(ANAL::IRenderer &renderer, const ANAL::IArcade &arcade) {
     renderer.clear();
     renderer.setWindowTitle("Minesweeper");
+    if (this->getState() == EMPTY_MAP) {
+        if (this->_mapDisplay.empty()) {
+            return;
+        }
+        this->m_state = WORKS;
+    }
     for (int row = 0; row < SIZE_ARRAY_ROW; row++)
     {
         for (int cell = 0; cell < SIZE_ARRAY_CELL; cell++)
@@ -105,10 +150,10 @@ void Minesweeper::Game::render(ANAL::IRenderer &renderer, const ANAL::IArcade &a
             auto const map_e = arcade.newEntity();
             auto const map_a = arcade.newAsset();
             std::string tile = "./assets/Minesweeper/textures/";
-            switch (this->_mapDisplay[row][cell])
+            switch (this->_mapDisplay.at(row).at(cell))
             {
                 case '_':
-                    tile += "block.png";
+                    tile += "block1.png";
                     break;
                 case '1':
                     tile += "1.png";
@@ -148,20 +193,34 @@ void Minesweeper::Game::render(ANAL::IRenderer &renderer, const ANAL::IArcade &a
             }
             map_a->setTexturePath(tile);
             map_a->setAlternateRender(this->_mapDisplay[row][cell]);
-            // map_e->setPos(ANAL::Vector2(row + 8, cell + 1));
-            map_e->setPos(ANAL::Vector2(row, cell));
+            map_e->setPos(ANAL::Vector2(cell + 1, row + 7));
             map_e->setAsset(*map_a);
             renderer.drawEntity(*map_e);
         }
     }
     renderer.drawText("Flags : " + std::to_string(this->_flags), ANAL::Vector2(2, 2));
-    if (this->_board.win() == true && this->_bombflagged == 10) {
-        renderer.drawText("Win", ANAL::Vector2(13, 13));
-        renderer.drawText("Press R to restart", ANAL::Vector2(12, 14));
-    } else if (this->_board.win() == false && this->_board.bombDiscover() == true) {
-        renderer.drawText(" Game Over", ANAL::Vector2(13, 13));
-        renderer.drawText("Press R to restart", ANAL::Vector2(12, 14));
+    static int frame = 0;
+    frame++;
+    if (this->getState() == WIN && this->_bombflagged == NUMBER_OF_BOMBS && this->_flags == 0)
+    {
+        if ((frame / 20) % 2 == 0)
+        {
+            renderer.drawText("Win", ANAL::Vector2(12, 25));
+            renderer.drawText("Player: AAAA", ANAL::Vector2(12, 26));
+            renderer.drawText("Score: " + std::to_string(this->_bombflagged), ANAL::Vector2(12, 27));
+            renderer.drawText("Press R to restart", ANAL::Vector2(12, 28));
+        }
+    } else if (this->getState() == DEFEAT && this->_board.bombDiscover() == true) {
+        if ((frame / 20) % 2 == 0)
+        {
+            renderer.drawText("Game Over", ANAL::Vector2(12, 25));
+            renderer.drawText("Player: AAAA", ANAL::Vector2(12, 26));
+            renderer.drawText("Score: " + std::to_string(this->_bombflagged), ANAL::Vector2(12, 27));
+            renderer.drawText("Press R to restart", ANAL::Vector2(12, 28));
+        }
     }
+    if (frame >= 6000)
+        frame = 0;
     renderer.render();
 }
 

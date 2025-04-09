@@ -12,28 +12,21 @@ Minesweeper::Board::Board() { initializeMap(); }
 
 void Minesweeper::Board::initializeMap()
 {
-    for (auto &row : _map) {
-        for (auto &cell : row) {
-            cell.setBomb(false);
-            cell.setFlag(false);
-            cell.setNumber(0);
-            cell.setVisible(false);
-        }
-    }
-
+    auto& _map = getMap();
     placeMine();
     adjacentBombs();
 }
 
 void Minesweeper::Board::placeMine()
 {
-    srand(time(0));
+    srand(time(nullptr));
     int minesPlaced = 0;
     while (minesPlaced < NUMBER_OF_BOMBS) {
         int cell = rand() % SIZE_ARRAY_CELL;
         int row = rand() % SIZE_ARRAY_ROW;
-        if (!_map[row][cell].getBomb()) {
-            _map[row][cell].setBomb(true);
+        auto& map = getMap();
+        if (!map.at(row).at(cell).getBomb()) {
+            map[row][cell].setBomb(true);
             minesPlaced++;
         }
     }
@@ -43,26 +36,26 @@ int Minesweeper::Board::conditionAdjacent(int row, int cell)
 {
     int count = 0;
 
-    // Vérifiez les limites avant d'accéder aux éléments
-    if (row > 0 && cell > 0 && _map[row - 1][cell - 1].getBomb())
+    //up
+    if (row > 0 && cell > 0 && this->getMap().at(row - 1).at(cell - 1).getBomb())
         count++;
-    if (row > 0 && _map[row - 1][cell].getBomb())
+    if (row > 0 && this->getMap().at(row - 1).at(cell).getBomb())
         count++;
-    if (row > 0 && cell < _map[0].size() - 1 && _map[row - 1][cell + 1].getBomb())
-        count++;
-
-    // middle-line
-    if (cell > 0 && _map[row][cell - 1].getBomb())
-        count++;
-    if (cell < _map[0].size() - 1 && _map[row][cell + 1].getBomb())
+    if (row > 0 && cell < this->getMap().at(0).size() - 1 && this->getMap().at(row - 1).at(cell + 1).getBomb())
         count++;
 
-    // down-line
-    if (row < _map.size() - 1 && cell > 0 && _map[row + 1][cell - 1].getBomb())
+    //middle
+    if (cell > 0 && this->getMap().at(row).at(cell - 1).getBomb())
         count++;
-    if (row < _map.size() - 1 && _map[row + 1][cell].getBomb())
+    if (cell < this->getMap().at(0).size() - 1 && this->getMap().at(row).at(cell + 1).getBomb())
         count++;
-    if (row < _map.size() - 1 && cell < _map[0].size() - 1 && _map[row + 1][cell + 1].getBomb())
+
+    //down
+    if (row < this->getMap().size() - 1 && cell > 0 && this->getMap().at(row + 1).at(cell - 1).getBomb())
+        count++;
+    if (row < this->getMap().size() - 1 && this->getMap().at(row + 1).at(cell).getBomb())
+        count++;
+    if (row < this->getMap().size() - 1 && cell < this->getMap().at(0).size() - 1 && this->getMap().at(row + 1).at(cell + 1).getBomb())
         count++;
 
     return count;
@@ -70,20 +63,20 @@ int Minesweeper::Board::conditionAdjacent(int row, int cell)
 
 void Minesweeper::Board::adjacentBombs()
 {
-    for (size_t row = 0; row < _map.size(); ++row) {
-        for (size_t cell = 0; cell < _map[row].size(); ++cell) {
-            if (_map[row][cell].getBomb())
+    for (size_t row = 0; row < this->getMap().size(); ++row) {
+        for (size_t cell = 0; cell < this->getMap().at(row).size(); ++cell) {
+            if (this->getMap().at(row).at(cell).getBomb())
                 continue;
             int count = 0;
             count = conditionAdjacent(row, cell);
-            _map[row][cell].setNumber(count);
+            this->getMap().at(row).at(cell).setNumber(count);
         }
     }
 }
 
-bool Minesweeper::Board::verifMapIsEmpty(std::array<std::array<Minesweeper::Mines, SIZE_ARRAY_CELL>, SIZE_ARRAY_ROW> _map)
+bool Minesweeper::Board::verifMapIsEmpty()
 {
-    for (const auto &row : _map) {
+    for (const auto &row : getMap()) {
         for (const auto &cell : row) {
             if (cell.getBomb() || cell.getFlag() || cell.getVisible() || cell.getNumber() != 0)
                 return false;
@@ -94,8 +87,8 @@ bool Minesweeper::Board::verifMapIsEmpty(std::array<std::array<Minesweeper::Mine
 
 void Minesweeper::Board::clearMap()
 {
-    if (!verifMapIsEmpty(_map)) {
-        for (auto &row : _map) {
+    if (!verifMapIsEmpty()) {
+        for (auto &row : this->getMap()) {
             for (auto &cell : row)
                 cell.reset();
         }
@@ -104,44 +97,44 @@ void Minesweeper::Board::clearMap()
 
 bool Minesweeper::Board::isBomb(ANAL::Vector2<int> _coor)
 {
-    if (this->_map[_coor.y][_coor.x].getBomb() == true)
+    if (this->getMap().at(_coor.y).at(_coor.x).getBomb() == true)
         return true;
     return false;
 }
 
 bool Minesweeper::Board::isFlag(ANAL::Vector2<int> _coor)
 {
-    if (this->_map[_coor.y][_coor.x].getFlag() == true)
+    if (this->getMap().at(_coor.y).at(_coor.x).getFlag() == true)
         return true;
     return false;
 }
 
 bool Minesweeper::Board::isVisible(ANAL::Vector2<int> _coor)
 {
-    if (this->_map[_coor.y][_coor.x].getVisible() == true)
+    if (this->getMap().at(_coor.y).at(_coor.x).getVisible() == true)
         return true;
     return false;
 }
 
 int Minesweeper::Board::isNumber(ANAL::Vector2<int> _coor)
 {
-    if (this->_map[_coor.y][_coor.x].getNumber() >= 1)
+    if (this->getMap().at(_coor.y).at(_coor.x).getNumber() >= 1)
         return this->_map[_coor.y][_coor.x].getNumber();
     return 0;
 }
 
-std::vector<std::string> Minesweeper::Board::mapToDisplay(std::array<std::array<Minesweeper::Mines, SIZE_ARRAY_CELL>, SIZE_ARRAY_ROW> _map) {
+std::vector<std::string> Minesweeper::Board::mapToDisplay() {
     std::vector<std::string> _mapdisplay;
 
-    for (const auto& row : _map) {
+    for (const auto& row : this->getMap()) {
         std::string cellStr;
         for (const auto& cell : row) {
             if (cell.getVisible()) {
-                if (cell.getBomb()) {
-                    printf("bombbbb\n");
+                if (cell.getBomb() && !cell.getFlag()) {
                     cellStr += 'B';
-                } else if (cell.getFlag()) {
-                    cellStr += cell.getFlag() ? 'F' : '|';
+                } else if (cell.getFlag() || (cell.getBomb() && cell.getFlag()) || (cell.getFlag() && cell.getNumber() >= 1)) {
+                    cellStr += 'F';
+                    continue;
                 } else {
                     int count = cell.getNumber();
                     cellStr += (count > 0) ? ('0' + count) : '|';
@@ -150,9 +143,6 @@ std::vector<std::string> Minesweeper::Board::mapToDisplay(std::array<std::array<
                 cellStr += '_';
             }
         }
-        for (auto it : cellStr)
-            std::cout << it;
-        printf("\n");
         _mapdisplay.push_back(cellStr);
     }
     return _mapdisplay;
@@ -181,9 +171,31 @@ bool Minesweeper::Board::bombDiscover() {
     return false;
 }
 
-void Minesweeper::Game::toVisible(int _coorX, int _coorY)
+void Minesweeper::Board::toVisible(int _coorX, int _coorY)
 {
-    std::cout << "------->>>>> " << this->_map[_coorX][_coorY].getVisible() << std::endl;
-    if (this->_map[_coorX][_coorY].getVisible() == false)
-        this->_map[_coorX][_coorY].setVisible(true);
+    if (this->getMap().at(_coorY).at(_coorX).getVisible() == false)
+        this->getMap().at(_coorY).at(_coorX).setVisible(true);
+}
+
+void Minesweeper::Board::toFlag(int _coorX, int _coorY)
+{
+    if (this->getMap().at(_coorY).at(_coorX).getFlag() == false) {
+        this->getMap().at(_coorY).at(_coorX).setVisible(true);
+        this->getMap().at(_coorY).at(_coorX).setFlag(true);
+    }
+}
+
+void Minesweeper::Board::mapVisible()
+{
+    for (auto &row : this->getMap()) {
+        for (auto &cell : row)
+            cell.setVisible(true);
+    }
+}
+
+int Minesweeper::Game::bBF()
+{
+    if (this->_board.getMap().at(this->_coor.y).at(this->_coor.x).getBomb() == true && this->_board.getMap().at(this->_coor.y).at(this->_coor.x).getFlag() == true)
+        return 1;
+    return 0;
 }
