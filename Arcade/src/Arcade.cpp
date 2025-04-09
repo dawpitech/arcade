@@ -77,6 +77,7 @@ void Arcade::handleHotKeys(const std::vector<ANAL::Event>& events)
     {
         if (type == ANAL::EventType::CLOSE)
             this->run = false;
+        continue;
         if (type == ANAL::EventType::KEYBOARD && keyEvent.value().key == ANAL::Keys::KEY_N && keyEvent.value().state == ANAL::State::PRESSED) {
             this->launchGame();
             this->_game_idx = (this->_game_idx + 1) % this->_games.size();
@@ -173,4 +174,9 @@ void Arcade::setPlayerHighscore(int score)
 int Arcade::getPlayerHighscore(const std::string &playerName) const
 {
     return 9999;
+}
+
+void Arcade::setPlayername(const std::string &playername)
+{
+    this->_playerName = playername;
 }
