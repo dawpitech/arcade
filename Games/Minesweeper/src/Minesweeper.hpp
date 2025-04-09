@@ -121,6 +121,8 @@ namespace Minesweeper
             CLICK m_click;
             std::vector<std::string> _mapDisplay = {};
             ANAL::Vector2<int> _coor{0, 0};
+	        std::string m_player_name;
+            int m_bestscore;
             bool _fClick = true;
             int _bombflagged = 0;
             int _flags = NUMBER_OF_BOMBS;

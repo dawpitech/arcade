@@ -17,6 +17,8 @@ void Minesweeper::Game::init()
     this->_board = Board();
     this->m_state = EMPTY_MAP;
     this->m_click = UNKNOWN;
+    this->m_bestscore = -1;
+    this->m_player_name = "";
     this->_flags = NUMBER_OF_BOMBS;
 }
 
@@ -25,6 +27,7 @@ void Minesweeper::Game::restart()
     this->_board.clearMap();
     this->_coor = {0, 0};
     this->_flags = NUMBER_OF_BOMBS;
+    this->_bombflagged = 0;
     this->_board.initializeMap();
 }
 
@@ -92,6 +95,10 @@ void Minesweeper::Game::processEvents(std::vector<ANAL::Event> &ev)
 }
 
 void Minesweeper::Game::compute(ANAL::IArcade& arcade) {
+    if (this->m_player_name == "")
+	    this->m_player_name = arcade.getPlayerName();
+    if (this->m_bestscore == -1)
+	    this->m_bestscore = arcade.getPlayerHighscore(this->m_player_name);
     if (this->getState() == DEFEAT) {
         this->_board.mapVisible();
         this->_mapDisplay = this->_board.mapToDisplay();
@@ -199,24 +206,32 @@ void Minesweeper::Game::render(ANAL::IRenderer &renderer, const ANAL::IArcade &a
         }
     }
     renderer.drawText("Flags : " + std::to_string(this->_flags), ANAL::Vector2(2, 2));
+    renderer.drawText("Player: " + this->m_player_name, ANAL::Vector2(2, 3));
+    renderer.drawText("Best: " + std::to_string(this->m_bestscore), ANAL::Vector2(2, 4));
     static int frame = 0;
     frame++;
     if (this->getState() == WIN && this->_bombflagged == NUMBER_OF_BOMBS && this->_flags == 0)
     {
+        if (this->_bombflagged > this->m_bestscore)
+	        this->m_bestscore = this->_bombflagged;
         if ((frame / 20) % 2 == 0)
         {
             renderer.drawText("Win", ANAL::Vector2(12, 25));
-            renderer.drawText("Player: AAAA", ANAL::Vector2(12, 26));
+            renderer.drawText("Player: " + this->m_player_name, ANAL::Vector2(12, 26));
             renderer.drawText("Score: " + std::to_string(this->_bombflagged), ANAL::Vector2(12, 27));
-            renderer.drawText("Press R to restart", ANAL::Vector2(12, 28));
+            renderer.drawText("Best: " + std::to_string(this->m_bestscore), ANAL::Vector2(12, 28));
+            renderer.drawText("Press R to restart", ANAL::Vector2(12, 29));
         }
     } else if (this->getState() == DEFEAT && this->_board.bombDiscover() == true) {
+        if (this->_bombflagged > this->m_bestscore)
+	        this->m_bestscore = this->_bombflagged;
         if ((frame / 20) % 2 == 0)
         {
             renderer.drawText("Game Over", ANAL::Vector2(12, 25));
-            renderer.drawText("Player: AAAA", ANAL::Vector2(12, 26));
+            renderer.drawText("Player: " + this->m_player_name, ANAL::Vector2(12, 26));
             renderer.drawText("Score: " + std::to_string(this->_bombflagged), ANAL::Vector2(12, 27));
-            renderer.drawText("Press R to restart", ANAL::Vector2(12, 28));
+            renderer.drawText("Best: " + std::to_string(this->m_bestscore), ANAL::Vector2(12, 28));
+            renderer.drawText("Press R to restart", ANAL::Vector2(12, 29));
         }
     }
     if (frame >= 6000)
