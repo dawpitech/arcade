@@ -85,6 +85,18 @@ std::vector<ANAL::Event>& arcade::renderers::SFMLRenderer::getEvents()
                     this->_events.insert(this->_events.end(), ev);
                 } catch (std::out_of_range&) {}
                 break;
+            case sf::Event::MouseButtonPressed:
+                case sf::Event::MouseButtonReleased:
+                try {
+                    ev.mouseEvent = {
+                        .coords = ANAL::Vector2(event.mouseButton.x / 16, event.mouseButton.y / 16),
+                        .key = MOUSEBINDS_MAP.at(event.mouseButton.button),
+                        .state = event.type == sf::Event::MouseButtonPressed ? ANAL::State::PRESSED : ANAL::State::RELEASED,
+                    };
+                    ev.type = ANAL::EventType::MOUSE;
+                    this->_events.insert(this->_events.end(), ev);
+                } catch (std::out_of_range&) {}
+                break;
             default:
                 break;
         }

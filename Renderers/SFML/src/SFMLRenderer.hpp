@@ -35,6 +35,11 @@ namespace arcade::renderers
         private:
             sf::RenderWindow _window;
             std::vector<ANAL::Event> _events;
+            std::map<sf::Mouse::Button, ANAL::MouseKeys> MOUSEBINDS_MAP = {
+                {sf::Mouse::Button::Left, ANAL::MouseKeys::LEFT_CLICK},
+                {sf::Mouse::Button::Middle, ANAL::MouseKeys::MIDDLE_CLICK},
+                {sf::Mouse::Button::Right, ANAL::MouseKeys::RIGHT_CLICK},
+            };
             std::map<sf::Keyboard::Key, ANAL::Keys> KEYBINDS_MAP = {
                 {sf::Keyboard::A, ANAL::Keys::KEY_A},
                 {sf::Keyboard::B, ANAL::Keys::KEY_B},
