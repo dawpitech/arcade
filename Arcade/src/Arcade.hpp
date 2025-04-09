@@ -46,6 +46,13 @@ class Arcade final : public ANAL::IArcade
 
         [[nodiscard]] const std::vector<std::string>& getGamesList() const;
         void launchGame(int idx);
+        void launchGame();
+
+        [[nodiscard]] const std::vector<std::string>& getRenderersList() const;
+        void setRenderer(int idx);
+        void setRenderer();
+
+        void setPlayername(const std::string& playername);
 
         SafeDL::safeHandle _game_so_handle;
         SafeDL::safeHandle _renderer_so_handle;
@@ -58,7 +65,7 @@ class Arcade final : public ANAL::IArcade
         std::vector<std::string> _renderers;
         std::size_t _renderer_idx = 0;
         bool run = true;
-        std::string _playerName = "UNKN";
+        std::string _playerName = "????";
 
         static bool str_ends_with(const std::string&, const std::string&);
 };

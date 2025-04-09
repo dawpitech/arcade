@@ -144,10 +144,10 @@ void Game::compute(ANAL::IArcade &arcade)
     else
     {
         auto tail = m_snake.back();
-        _snakemap[tail.y][tail.x] = ' ';
+        _snakemap[tail.y][tail.x - 1] = ' ';
         m_snake.pop_back();
     }
-    _snakemap[new_head.y][new_head.x - 1] = '@';
+    _snakemap[new_head.y][new_head.x - 1] = '+';
 }
 
 void Game::render(ANAL::IRenderer &renderer, const ANAL::IArcade &arcade)
@@ -186,7 +186,7 @@ void Game::render(ANAL::IRenderer &renderer, const ANAL::IArcade &arcade)
     berry_e->setPos(this->m_berrypos);
     berry_e->setAsset(*berry_a);
     renderer.drawEntity(*berry_e);
-    renderer.drawText("Player: AAAA", ANAL::Vector2(1, 0));
+    renderer.drawText("Player: " + this->m_player_name, ANAL::Vector2(1, 0));
     renderer.drawText("Score: " + std::to_string(this->m_score), ANAL::Vector2(1, 1));
     renderer.drawText("Best: " + std::to_string(this->m_bestscore), ANAL::Vector2(20, 1));
     for (auto &segment : m_snake)
@@ -208,7 +208,7 @@ void Game::render(ANAL::IRenderer &renderer, const ANAL::IArcade &arcade)
         if ((frame / 20) % 2 == 0)
         {
             renderer.drawText(" Game Over", ANAL::Vector2(13, 13));
-            renderer.drawText("Player: AAAA", ANAL::Vector2(13, 14));
+            renderer.drawText("Player: " + this->m_player_name, ANAL::Vector2(13, 14));
             renderer.drawText("Score: " + std::to_string(this->m_score), ANAL::Vector2(13, 15));
             renderer.drawText("Best: " + std::to_string(this->m_bestscore), ANAL::Vector2(13, 16));
             renderer.drawText("Press R to restart", ANAL::Vector2(12, 17));

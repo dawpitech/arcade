@@ -12,20 +12,18 @@
 #include "ANAL/Events.hpp"
 #include "ANAL/IModule.hpp"
 
-arcade::SFMLRenderer::SFMLRenderer()
-    : _window(sf::VideoMode(WINDOW_SIZE * SCALE_FACTOR, WINDOW_SIZE * SCALE_FACTOR), "Arcade")
+arcade::renderers::SFMLRenderer::SFMLRenderer()
+    : _window(sf::VideoMode(WINDOW_SIZE * SCALE_FACTOR, WINDOW_SIZE * SCALE_FACTOR), "Arcade", sf::Style::Default | sf::Style::Titlebar)
     , _events({})
 {
-    //std::cout << "SFML Init" << std::endl;
 }
 
-arcade::SFMLRenderer::~SFMLRenderer()
+arcade::renderers::SFMLRenderer::~SFMLRenderer()
 {
     this->_window.close();
-    //std::cout << "SFML Destroyed" << std::endl;
 }
 
-void arcade::SFMLRenderer::drawEntity(const ANAL::IEntity& entity)
+void arcade::renderers::SFMLRenderer::drawEntity(const ANAL::IEntity& entity)
 {
     sf::Texture texture;
     if (!texture.loadFromFile(entity.getAsset().getTexturePath()))
@@ -36,7 +34,7 @@ void arcade::SFMLRenderer::drawEntity(const ANAL::IEntity& entity)
     this->_window.draw(sfSprite);
 }
 
-void arcade::SFMLRenderer::drawText(const std::string& str,
+void arcade::renderers::SFMLRenderer::drawText(const std::string& str,
     const ANAL::Vector2<int> pos)
 {
     sf::Font font;
@@ -48,65 +46,59 @@ void arcade::SFMLRenderer::drawText(const std::string& str,
     this->_window.draw(text);
 }
 
-void arcade::SFMLRenderer::setWindowTitle(const std::string& title)
+void arcade::renderers::SFMLRenderer::setWindowTitle(const std::string& title)
 {
     this->_window.setTitle(title);
 }
 
-void arcade::SFMLRenderer::render()
+void arcade::renderers::SFMLRenderer::render()
 {
     this->_window.display();
 }
 
-void arcade::SFMLRenderer::clear()
+void arcade::renderers::SFMLRenderer::clear()
 {
     this->_window.clear();
 }
 
-std::vector<ANAL::Event>& arcade::SFMLRenderer::getEvents()
+std::vector<ANAL::Event>& arcade::renderers::SFMLRenderer::getEvents()
 {
-    sf::Event event;
+    sf::Event event{};
     this->_events.clear();
     while (_window.pollEvent(event)) {
         ANAL::Event ev;
-        if (event.type == sf::Event::Closed) {
-            ev.type = ANAL::EventType::CLOSE;
-            this->_events.insert(this->_events.end(), ev);
-        } else if (event.type == sf::Event::KeyPressed || event.type == sf::Event::KeyReleased) {
-            ev.type = ANAL::EventType::KEYBOARD;
-            ANAL::KeyEvent keyEvent;
-            keyEvent.state = (event.type == sf::Event::KeyPressed) ? ANAL::State::PRESSED : ANAL::State::RELEASED;
-            
-            switch (event.key.code) {
-                case sf::Keyboard::Up:
-                    keyEvent.key = ANAL::Keys::ARROW_UP;
-                    break;
-                case sf::Keyboard::Down:
-                    keyEvent.key = ANAL::Keys::ARROW_DOWN;
-                    break;
-                case sf::Keyboard::Left:
-                    keyEvent.key = ANAL::Keys::ARROW_LEFT;
-                    break;
-                case sf::Keyboard::Right:
-                    keyEvent.key = ANAL::Keys::ARROW_RIGHT;
-                    break;
-                case sf::Keyboard::R:
-                    keyEvent.key = ANAL::Keys::KEY_R;
-                    break;
-                case sf::Keyboard::B:
-                    keyEvent.key = ANAL::Keys::KEY_B;
-                    break;
-                case sf::Keyboard::N:
-                    keyEvent.key = ANAL::Keys::KEY_N;
-                    break;
-                case sf::Keyboard::E:
-                    keyEvent.key = ANAL::Keys::KEY_E;
-                    break;
-                default:
-                    continue;
-            }
-            ev.keyEvent = keyEvent;
-            this->_events.insert(this->_events.end(), ev);
+
+        switch (event.type)
+        {
+            case sf::Event::Closed:
+                ev.type = ANAL::EventType::CLOSE;
+                this->_events.insert(this->_events.end(), ev);
+                break;
+            case sf::Event::KeyReleased:
+            case sf::Event::KeyPressed:
+                try {
+                    ev.keyEvent = {
+                        .key = KEYBINDS_MAP.at(event.key.code),
+                        .state = event.type == sf::Event::KeyPressed ? ANAL::State::PRESSED : ANAL::State::RELEASED,
+                    };
+                    ev.type = ANAL::EventType::KEYBOARD;
+                    this->_events.insert(this->_events.end(), ev);
+                } catch (std::out_of_range&) {}
+                break;
+            case sf::Event::MouseButtonPressed:
+                case sf::Event::MouseButtonReleased:
+                try {
+                    ev.mouseEvent = {
+                        .coords = ANAL::Vector2(event.mouseButton.x / 16, event.mouseButton.y / 16),
+                        .key = MOUSEBINDS_MAP.at(event.mouseButton.button),
+                        .state = event.type == sf::Event::MouseButtonPressed ? ANAL::State::PRESSED : ANAL::State::RELEASED,
+                    };
+                    ev.type = ANAL::EventType::MOUSE;
+                    this->_events.insert(this->_events.end(), ev);
+                } catch (std::out_of_range&) {}
+                break;
+            default:
+                break;
         }
     }
     return this->_events;
@@ -119,4 +111,4 @@ ANAL::ModuleType uwu_get_module_type()
     { return ANAL::ModuleType::RENDERER; }
 
 extern "C" std::unique_ptr<ANAL::IRenderer> uwu_entrypoint_renderer()
-    { return std::make_unique<arcade::SFMLRenderer>(); }
+    { return std::make_unique<arcade::renderers::SFMLRenderer>(); }

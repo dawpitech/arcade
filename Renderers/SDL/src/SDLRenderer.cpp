@@ -38,8 +38,6 @@ arcade::SDLRenderer::SDLRenderer()
     this->_renderer = SDL_CreateRenderer(this->_window, -1, SDL_RENDERER_ACCELERATED);
     if (this->_renderer == nullptr)
         throw Exception();
-        
-    //std::cout << "SDL Init" << std::endl;
 }
 
 arcade::SDLRenderer::~SDLRenderer()
@@ -52,8 +50,6 @@ arcade::SDLRenderer::~SDLRenderer()
     TTF_Quit();
     IMG_Quit();
     SDL_Quit();
-    
-    //std::cout << "SDL Destroyed" << std::endl;
 }
 
 void arcade::SDLRenderer::drawEntity(const ANAL::IEntity& entity)
@@ -132,69 +128,40 @@ std::vector<ANAL::Event>& arcade::SDLRenderer::getEvents()
     
     while (SDL_PollEvent(&event)) {
         ANAL::Event ev;
-        
-        if (event.type == SDL_QUIT) {
-            ev.type = ANAL::EventType::CLOSE;
-            this->_events.insert(this->_events.end(), ev);
-        } else if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
-            ev.type = ANAL::EventType::KEYBOARD;
-            ANAL::KeyEvent keyEvent;
-            keyEvent.state = (event.type == SDL_KEYDOWN) ? ANAL::State::PRESSED : ANAL::State::RELEASED;
-            
-            switch (event.key.keysym.sym) {
-                case SDLK_UP:
-                    keyEvent.key = ANAL::Keys::ARROW_UP;
-                    break;
-                case SDLK_DOWN:
-                    keyEvent.key = ANAL::Keys::ARROW_DOWN;
-                    break;
-                case SDLK_LEFT:
-                    keyEvent.key = ANAL::Keys::ARROW_LEFT;
-                    break;
-                case SDLK_RIGHT:
-                    keyEvent.key = ANAL::Keys::ARROW_RIGHT;
-                    break;
-                case SDLK_n:
-                    keyEvent.key = ANAL::Keys::KEY_N;
-                    break;
-                case SDLK_b:
-                    keyEvent.key = ANAL::Keys::KEY_B;
-                    break;
-                case SDLK_e:
-                    keyEvent.key = ANAL::Keys::KEY_E;
-                    break;
-		        case SDLK_r:
-		            keyEvent.key = ANAL::Keys::KEY_R;
-		            break;
-                default:
-                    continue;
-            }
-            ev.keyEvent = keyEvent;
-            this->_events.insert(this->_events.end(), ev);
-        } else if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP) {
-            ev.type = ANAL::EventType::MOUSE;
-            ANAL::MouseEvent mouseEvent{{0, 0}, ANAL::MouseKeys::LEFT_CLICK, ANAL::State::PRESSED};
-            mouseEvent.coords = { event.button.x / 16, event.button.y / 16};
-            mouseEvent.state = (event.type == SDL_MOUSEBUTTONDOWN) ? ANAL::State::PRESSED : ANAL::State::RELEASED;
 
-            switch (event.button.button) {
-                case SDL_BUTTON_LEFT:
-                    mouseEvent.key = ANAL::MouseKeys::LEFT_CLICK;
-                    break;
-                case SDL_BUTTON_MIDDLE:
-                    mouseEvent.key = ANAL::MouseKeys::MIDDLE_CLICK;
-                    break;
-                case SDL_BUTTON_RIGHT:
-                    mouseEvent.key = ANAL::MouseKeys::RIGHT_CLICK;
-                    break;
-                default:
-                    continue;
-            }
-            ev.mouseEvent = mouseEvent;
-            this->_events.insert(this->_events.end(), ev);
+        switch (event.type)
+        {
+            case SDL_QUIT:
+                ev.type = ANAL::EventType::CLOSE;
+                this->_events.insert(this->_events.end(), ev);
+                break;
+            case SDL_KEYDOWN:
+                case SDL_KEYUP:
+                try {
+                    ev.keyEvent = {
+                        .key = KEYBINDS_MAP.at(event.key.keysym.sym),
+                        .state = event.type == SDL_KEYDOWN ? ANAL::State::PRESSED : ANAL::State::RELEASED,
+                    };
+                    ev.type = ANAL::EventType::KEYBOARD;
+                    this->_events.insert(this->_events.end(), ev);
+                } catch (std::out_of_range&) {}
+                break;
+            case SDL_MOUSEBUTTONUP:
+            case SDL_MOUSEBUTTONDOWN:
+                try {
+                    ev.type = ANAL::EventType::MOUSE;
+                    ev.mouseEvent = {
+                        .coords = ANAL::Vector2(event.button.x / 16, event.button.y / 16),
+                        .key = MOUSEBINDS_MAP.at(event.button.button),
+                        .state = event.type == SDL_MOUSEBUTTONDOWN ? ANAL::State::PRESSED : ANAL::State::RELEASED,
+                    };
+                    this->_events.insert(this->_events.end(), ev);
+                } catch (std::out_of_range&) {}
+                break;
+            default:
+                break;
         }
     }
-
     return this->_events;
 }
 
