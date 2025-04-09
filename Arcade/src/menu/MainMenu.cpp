@@ -8,6 +8,9 @@
 #include <algorithm>
 
 #include "MainMenu.hpp"
+
+#include <iostream>
+
 #include "../Arcade.hpp"
 #include "ANAL/IModule.hpp"
 
@@ -15,11 +18,11 @@ void MainMenu::processEvents(std::vector<ANAL::Event>& events)
 {
     for (const auto &[type, keyEvent, mouseEvent, closeEvent] : events) {
         if (type == ANAL::EventType::KEYBOARD && keyEvent.value().key == ANAL::Keys::ARROW_DOWN && keyEvent.value().state == ANAL::State::PRESSED)
-            this->selected_game++;
+            this->selected_index++;
         if (type == ANAL::EventType::KEYBOARD && keyEvent.value().key == ANAL::Keys::ARROW_UP && keyEvent.value().state == ANAL::State::PRESSED)
-            this->selected_game--;
+            this->selected_index--;
         if (type == ANAL::EventType::KEYBOARD && keyEvent.value().key == ANAL::Keys::KEY_E && keyEvent.value().state == ANAL::State::PRESSED)
-            this->launching = true;
+            this->enter = true;
     }
 
     events.clear();
@@ -28,10 +31,16 @@ void MainMenu::processEvents(std::vector<ANAL::Event>& events)
 void MainMenu::compute(ANAL::IArcade& arcade)
 {
     const auto& my_arcade = dynamic_cast<const Arcade&>(arcade);
-    this->selected_game = std::clamp(this->selected_game, 0, static_cast<int>(my_arcade.getGamesList().size()) - 1);
+    this->selected_index = std::clamp(this->selected_index, 0,
+        static_cast<int>(my_arcade.getGamesList().size() + my_arcade.getRenderersList().size()) - 1);
 
-    if (this->launching)
+    if (!this->enter)
+        return;
+    if (selected_index < my_arcade.getGamesList().size())
         const_cast<Arcade&>(my_arcade).launchGame(this->selected_game);
+    else
+        const_cast<Arcade&>(my_arcade).setRenderer(this->selected_renderer);
+    this->enter = false;
 }
 
 void MainMenu::render(ANAL::IRenderer& renderer, const ANAL::IArcade& arcade)
@@ -41,17 +50,28 @@ void MainMenu::render(ANAL::IRenderer& renderer, const ANAL::IArcade& arcade)
     renderer.clear();
     renderer.setWindowTitle("Main Menu - Arcade");
     renderer.drawText("Arcade menu", ANAL::Vector2(12, 0));
-    renderer.drawText("Choose game:", ANAL::Vector2(0, 2));
 
+    renderer.drawText("Choose game:", ANAL::Vector2(0, 2));
     int vertical_index = 3;
     for (const auto& game : my_arcade.getGamesList())
         renderer.drawText(game, ANAL::Vector2(2, vertical_index++));
 
-    renderer.drawText("->", ANAL::Vector2(0, 3 + selected_game));
+    renderer.drawText("Choose renderer:", ANAL::Vector2(0, ++vertical_index));
+    vertical_index++;
+    for (const auto& renderer_entry : my_arcade.getRenderersList())
+        renderer.drawText(renderer_entry, ANAL::Vector2(2, vertical_index++));
 
-    renderer.drawText("PRO TIPS:", ANAL::Vector2(13, 20));
-    renderer.drawText("You can press 'N' to switch to the next game", ANAL::Vector2(5, 21));
-    renderer.drawText("You can press 'B' to switch renderer", ANAL::Vector2(7, 22));
+    if (selected_index < my_arcade.getGamesList().size()) {
+        renderer.drawText("->", ANAL::Vector2(0, 3 + selected_index));
+        selected_game = selected_index;
+    } else {
+        renderer.drawText("->", ANAL::Vector2(0, 3 + selected_index + static_cast<int>(my_arcade.getGamesList().size())));
+        selected_renderer = selected_index - static_cast<int>(my_arcade.getGamesList().size());
+    }
+
+    renderer.drawText("PRO TIPS:", ANAL::Vector2(13, 23));
+    renderer.drawText("You can press 'N' to switch to the next game", ANAL::Vector2(5, 24));
+    renderer.drawText("You can press 'B' to switch renderer", ANAL::Vector2(7, 25));
 
     renderer.render();
 }

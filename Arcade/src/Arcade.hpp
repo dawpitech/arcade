@@ -45,7 +45,11 @@ class Arcade final : public ANAL::IArcade
         [[nodiscard]] int getPlayerHighscore(const std::string &playerName) const override;
 
         [[nodiscard]] const std::vector<std::string>& getGamesList() const;
+        [[nodiscard]] const std::vector<std::string>& getRenderersList() const;
         void launchGame(int idx);
+        void launchGame();
+        void setRenderer(int idx);
+        void setRenderer();
 
         SafeDL::safeHandle _game_so_handle;
         SafeDL::safeHandle _renderer_so_handle;

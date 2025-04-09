@@ -21,7 +21,9 @@ class MainMenu final : public ANAL::IGame
         void render(ANAL::IRenderer& renderer, const ANAL::IArcade& arcade) override;
 
     private:
+        int selected_index = 0;
         int selected_game = 0;
-        bool launching = false;
+        int selected_renderer = 0;
+        bool enter = false;
 };
 #endif //MAINMENU_HPP
