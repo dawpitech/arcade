@@ -65,7 +65,7 @@ void MainMenu::render(ANAL::IRenderer& renderer, const ANAL::IArcade& arcade)
         renderer.drawText("->", ANAL::Vector2(0, 3 + selected_index));
         selected_game = selected_index;
     } else {
-        renderer.drawText("->", ANAL::Vector2(0, 3 + selected_index + static_cast<int>(my_arcade.getGamesList().size())));
+        renderer.drawText("->", ANAL::Vector2(0, 2 + selected_index + static_cast<int>(my_arcade.getRenderersList().size())));
         selected_renderer = selected_index - static_cast<int>(my_arcade.getGamesList().size());
     }
 
