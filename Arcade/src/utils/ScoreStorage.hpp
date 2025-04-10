@@ -62,8 +62,6 @@ class SaveFile
                     if (r_game_name[0] == '\0') {
                         std::strncpy(r_game_name, gameName.c_str(), gameName.size());
                         std::strncpy(r_username, playername.c_str(), playername.size());
-                        r_game_name[sizeof(r_game_name) - 1] = '\0';
-                        r_username[sizeof(r_username) - 1] = '\0';
                         r_score = score;
                         break;
                     }
@@ -118,7 +116,7 @@ class SaveFile
 
         typedef struct game_save_s {
             char game_name[64];
-            char username[4];
+            char username[5];
             int score;
         } game_save_t;
 
