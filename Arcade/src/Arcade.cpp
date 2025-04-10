@@ -8,10 +8,11 @@
 #include <iostream>
 #include <thread>
 
-#include "Arcade.hpp"
 #include "ANAL/Events.hpp"
+#include "Arcade.hpp"
 #include "internals/Asset.hpp"
 #include "internals/Entity.hpp"
+#include "menu/MainMenu.hpp"
 #include "utils/ModuleLoader.hpp"
 #include "utils/SafeDirectoryLister.hpp"
 #include "utils/ScoreStorage.hpp"
@@ -31,7 +32,8 @@ void Arcade::launch()
         const auto needed = now + std::chrono::operator ""ms(33);
 
 	    auto events = this->_renderer->getEvents();
-        this->handleHotKeys(events);
+        if (dynamic_cast<MainMenu*>(this->_game.get()) == nullptr)
+            this->handleHotKeys(events);
         this->_game->processEvents(events);
         this->_game->compute(*this);
         this->_game->render(*this->_renderer, *this);
@@ -78,7 +80,6 @@ void Arcade::handleHotKeys(const std::vector<ANAL::Event>& events)
     {
         if (type == ANAL::EventType::CLOSE)
             this->run = false;
-        continue;
         if (type == ANAL::EventType::KEYBOARD && keyEvent.value().key == ANAL::Keys::KEY_N && keyEvent.value().state == ANAL::State::PRESSED) {
             this->launchGame();
             this->_game_idx = (this->_game_idx + 1) % this->_games.size();

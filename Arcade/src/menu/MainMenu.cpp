@@ -91,7 +91,7 @@ void MainMenu::render(ANAL::IRenderer& renderer, const ANAL::IArcade& arcade)
     for (int i = 0; i < 4; i++)
         renderer.drawText(std::string{this->_playername.at(i)}, ANAL::Vector2(2 + i, 7 + games_len + renderers_len));
 
-    renderer.drawText("PRO TIPS: (disabled for now)", ANAL::Vector2(13, 23));
+    renderer.drawText("PRO TIPS:", ANAL::Vector2(13, 23));
     renderer.drawText("You can press 'N' to switch to the next game", ANAL::Vector2(5, 24));
     renderer.drawText("You can press 'B' to switch renderer", ANAL::Vector2(7, 25));
 
