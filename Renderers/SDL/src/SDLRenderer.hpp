@@ -19,7 +19,7 @@
     #define WINDOW_SIZE 32
     #define FONT_SIZE 1
 
-namespace arcade
+namespace arcade::renderers
 {
     class SDLRenderer final : public ANAL::IRenderer
     {
