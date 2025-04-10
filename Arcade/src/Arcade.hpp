@@ -29,7 +29,7 @@ class Arcade final : public ANAL::IArcade
         static void printHelp();
         void launch();
         void scanForModules();
-        void handleHotKeys(const std::vector<ANAL::Event>&);
+        void handleHotKeys(bool bypass, const std::vector<ANAL::Event>&);
 
         void setGame(std::unique_ptr<ANAL::IGame>&);
         void setRenderer(std::unique_ptr<ANAL::IRenderer>&);
@@ -46,11 +46,11 @@ class Arcade final : public ANAL::IArcade
 
         [[nodiscard]] const std::vector<std::string>& getGamesList() const;
         void launchGame(int idx);
-        void launchGame();
+        void nextGame();
 
         [[nodiscard]] const std::vector<std::string>& getRenderersList() const;
         void setRenderer(int idx);
-        void setRenderer();
+        void nextRenderer();
 
         void setPlayername(const std::string& playername);
 

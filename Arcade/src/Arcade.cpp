@@ -12,8 +12,10 @@
 #include "Arcade.hpp"
 #include "internals/Asset.hpp"
 #include "internals/Entity.hpp"
+#include "menu/MainMenu.hpp"
 #include "utils/ModuleLoader.hpp"
 #include "utils/SafeDirectoryLister.hpp"
+#include "utils/ScoreStorage.hpp"
 
 void Arcade::printHelp()
 {
@@ -30,7 +32,7 @@ void Arcade::launch()
         const auto needed = now + std::chrono::operator ""ms(33);
 
 	    auto events = this->_renderer->getEvents();
-        this->handleHotKeys(events);
+        this->handleHotKeys(dynamic_cast<MainMenu*>(this->_game.get()) != nullptr, events);
         this->_game->processEvents(events);
         this->_game->compute(*this);
         this->_game->render(*this->_renderer, *this);
@@ -71,21 +73,20 @@ void Arcade::scanForModules()
     } catch (SafeDirectoryLister::NoMoreFileException&) {}
 }
 
-void Arcade::handleHotKeys(const std::vector<ANAL::Event>& events)
+void Arcade::handleHotKeys(const bool bypass, const std::vector<ANAL::Event>& events)
 {
     for (const auto &[type, keyEvent, mouseEvent, closeEvent] : events)
     {
         if (type == ANAL::EventType::CLOSE)
             this->run = false;
-        continue;
+        if (bypass)
+            continue;
         if (type == ANAL::EventType::KEYBOARD && keyEvent.value().key == ANAL::Keys::KEY_N && keyEvent.value().state == ANAL::State::PRESSED) {
-            this->launchGame();
-            this->_game_idx = (this->_game_idx + 1) % this->_games.size();
+            this->nextGame();
             return;
         }
         if (type == ANAL::EventType::KEYBOARD && keyEvent.value().key == ANAL::Keys::KEY_B && keyEvent.value().state == ANAL::State::PRESSED) {
-            this->setRenderer();
-            this->_renderer_idx = (this->_renderer_idx + 1) % this->_renderers.size();
+            this->nextRenderer();
             return;
         }
     }
@@ -134,10 +135,10 @@ const std::vector<std::string> &Arcade::getRenderersList() const
 void Arcade::launchGame(const int idx)
 {
     this->_game_idx = idx;
-    this->launchGame();
+    this->nextGame();
 }
 
-void Arcade::launchGame()
+void Arcade::nextGame()
 {
     auto new_handle = SafeDL::open("./lib/" + this->_games.at(this->_game_idx), RTLD_LAZY);
     this->_game_idx = (this->_game_idx + 1) % this->_games.size();
@@ -145,7 +146,13 @@ void Arcade::launchGame()
     this->_game_so_handle.swap(new_handle);
 }
 
-void Arcade::setRenderer()
+void Arcade::setRenderer(const int idx)
+{
+    this->_renderer_idx = idx;
+    this->nextRenderer();
+}
+
+void Arcade::nextRenderer()
 {
     auto new_handle = SafeDL::open("./lib/" + this->_renderers.at(this->_renderer_idx), RTLD_LAZY);
     this->_renderer_idx = (this->_renderer_idx + 1) % this->_renderers.size();
@@ -155,25 +162,23 @@ void Arcade::setRenderer()
     this->_renderer_so_handle = std::move(new_handle);
 }
 
-void Arcade::setRenderer(const int idx)
-{
-    this->_renderer_idx = idx;
-    this->setRenderer();
-}
-
 const std::string &Arcade::getPlayerName() const
 {
     return this->_playerName;
 }
 
-void Arcade::setPlayerHighscore(int score)
+void Arcade::setPlayerHighscore(const int score)
 {
-    return;
+    if (this->_playerName == "????")
+        return;
+    SaveFile::saveScore(this->_games.at(this->_game_idx), this->getPlayerName(), score);
 }
 
 int Arcade::getPlayerHighscore(const std::string &playerName) const
 {
-    return 9999;
+    if (playerName == "????")
+        return 0;
+    return SaveFile::loadScore(this->_games.at(this->_game_idx), this->getPlayerName());
 }
 
 void Arcade::setPlayername(const std::string &playername)

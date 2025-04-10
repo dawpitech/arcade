@@ -4,3 +4,4 @@ build
 .cache
 arcade
 compile_commands.json
+.arcade_save

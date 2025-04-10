@@ -109,6 +109,10 @@ void Game::compute(ANAL::IArcade &arcade)
 	this->m_player_name = arcade.getPlayerName();
     if (this->m_bestscore == -1)
 	this->m_bestscore = arcade.getPlayerHighscore(this->m_player_name);
+    if (this->m_score > this->m_bestscore && this->m_game_ended) {
+	this->m_bestscore = this->m_score;
+	arcade.setPlayerHighscore(this->m_bestscore);
+    }
     if (this->m_game_ended) return;
 
     static int frame = 0;
@@ -203,8 +207,6 @@ void Game::render(ANAL::IRenderer &renderer, const ANAL::IArcade &arcade)
     frame++;
     if (this->m_game_ended)
     {
-	if (this->m_score > this->m_bestscore)
-	    this->m_bestscore = this->m_score;
         if ((frame / 20) % 2 == 0)
         {
             renderer.drawText(" Game Over", ANAL::Vector2(13, 13));

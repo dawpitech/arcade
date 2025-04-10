@@ -15,7 +15,7 @@
 #include "ANAL/Events.hpp"
 #include "ANAL/IModule.hpp"
 
-arcade::SDLRenderer::SDLRenderer()
+arcade::renderers::SDLRenderer::SDLRenderer()
     : _window(nullptr)
     , _renderer(nullptr)
     , _events({})
@@ -40,7 +40,7 @@ arcade::SDLRenderer::SDLRenderer()
         throw Exception();
 }
 
-arcade::SDLRenderer::~SDLRenderer()
+arcade::renderers::SDLRenderer::~SDLRenderer()
 {
     if (this->_renderer != nullptr)
         SDL_DestroyRenderer(this->_renderer);
@@ -52,7 +52,7 @@ arcade::SDLRenderer::~SDLRenderer()
     SDL_Quit();
 }
 
-void arcade::SDLRenderer::drawEntity(const ANAL::IEntity& entity)
+void arcade::renderers::SDLRenderer::drawEntity(const ANAL::IEntity& entity)
 {
     SDL_Surface* surface = IMG_Load(entity.getAsset().getTexturePath().c_str());
     if (surface == nullptr)
@@ -74,7 +74,7 @@ void arcade::SDLRenderer::drawEntity(const ANAL::IEntity& entity)
     SDL_DestroyTexture(texture);
 }
 
-void arcade::SDLRenderer::drawText(const std::string& str, const ANAL::Vector2<int> pos)
+void arcade::renderers::SDLRenderer::drawText(const std::string& str, const ANAL::Vector2<int> pos)
 {
     TTF_Font* font = TTF_OpenFont("./assets/fonts/Abordage-Regular.ttf", FONT_SIZE * SCALE_FACTOR);
     if (font == nullptr)
@@ -105,23 +105,23 @@ void arcade::SDLRenderer::drawText(const std::string& str, const ANAL::Vector2<i
     TTF_CloseFont(font);
 }
 
-void arcade::SDLRenderer::setWindowTitle(const std::string& title)
+void arcade::renderers::SDLRenderer::setWindowTitle(const std::string& title)
 {
     SDL_SetWindowTitle(this->_window, title.c_str());
 }
 
-void arcade::SDLRenderer::render()
+void arcade::renderers::SDLRenderer::render()
 {
     SDL_RenderPresent(this->_renderer);
 }
 
-void arcade::SDLRenderer::clear()
+void arcade::renderers::SDLRenderer::clear()
 {
     SDL_SetRenderDrawColor(this->_renderer, 0, 0, 0, 255);
     SDL_RenderClear(this->_renderer);
 }
 
-std::vector<ANAL::Event>& arcade::SDLRenderer::getEvents()
+std::vector<ANAL::Event>& arcade::renderers::SDLRenderer::getEvents()
 {
     SDL_Event event;
     this->_events.clear();
@@ -172,4 +172,4 @@ ANAL::ModuleType uwu_get_module_type()
     { return ANAL::ModuleType::RENDERER; }
 
 extern "C" std::unique_ptr<ANAL::IRenderer> uwu_entrypoint_renderer()
-    { return std::make_unique<arcade::SDLRenderer>(); }
+    { return std::make_unique<arcade::renderers::SDLRenderer>(); }

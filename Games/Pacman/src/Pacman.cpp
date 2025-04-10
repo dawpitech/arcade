@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <random>
 #include <string>
+#include <vector>
 #include "ANAL/Events.hpp"
 #include "ANAL/IModule.hpp"
 #include "ANAL/Vector2.hpp"
@@ -54,7 +55,7 @@ void Game::deinit() { this->m_ghosts.clear(); }
 void Game::init()
 {
     this->m_player = Player();
-    this->m_player_name = "";
+    this->m_player_name.clear();
     this->_pacmanmap = pacmanmap_org;
     this->m_time_ghosts = 280; // 280;
     this->m_ghosts.emplace_back(ANAL::Vector2(15, 14), "red");
@@ -138,10 +139,14 @@ void Game::processEvents(std::vector<ANAL::Event> &ev)
 
 void Game::compute(ANAL::IArcade &arcade)
 {
-    if (this->m_player_name == "")
+    if (this->m_player_name.empty())
         this->m_player_name = arcade.getPlayerName();
     if (this->m_best_score == -1)
         this->m_best_score = arcade.getPlayerHighscore(this->m_player_name);
+    if (this->m_player.getScore() > this->m_best_score && this->m_player.getState() == Player::DEAD) {
+        this->m_best_score = this->m_player.getScore();
+        arcade.setPlayerHighscore(this->m_best_score);
+    }
     if (this->m_player.getState() == Player::DEAD)
     {
         if (this->m_player.getScore() > this->m_best_score)
@@ -203,8 +208,10 @@ void Game::compute(ANAL::IArcade &arcade)
 
     std::random_device rd;
     std::mt19937 rng(rd());
-    for (Ghost &g : this->m_ghosts)
+    static std::vector<ANAL::Vector2<int>> last_pos(this->m_ghosts.size(), {0, 0});
+    for (std::size_t i = 0; i < this->m_ghosts.size(); ++i)
     {
+        Ghost &g = this->m_ghosts[i];
         if (g.getState() != Ghost::DEAD)
         {
             ANAL::Vector2 pos = g.getPos();
@@ -217,6 +224,7 @@ void Game::compute(ANAL::IArcade &arcade)
                 else
                 {
                     pos.y -= 1;
+                    last_pos[i] = g.getPos();
                     g.setPos(pos);
                     continue;
                 }
@@ -230,6 +238,14 @@ void Game::compute(ANAL::IArcade &arcade)
                 valid_moves.push_back({pos.x, pos.y - 1});
             if (this->_pacmanmap[pos.y + 1][pos.x - 1] != '#' && this->_pacmanmap[pos.y + 1][pos.x - 1] != '_')
                 valid_moves.push_back({pos.x, pos.y + 1});
+            ANAL::Vector2<int> prev = last_pos[i];
+            valid_moves.erase(
+                std::remove_if(valid_moves.begin(), valid_moves.end(),
+                    [&](const ANAL::Vector2<int>& v) {
+                        return v.x == prev.x && v.y == prev.y;
+                    }),
+                valid_moves.end()
+            );
             if (!valid_moves.empty())
             {
                 std::shuffle(valid_moves.begin(), valid_moves.end(), rng);
@@ -242,6 +258,7 @@ void Game::compute(ANAL::IArcade &arcade)
                 {
                     g.setLook(Ghost::RIGHT);
                 }
+                last_pos[i] = g.getPos();
                 g.setPos(p);
             }
         }
