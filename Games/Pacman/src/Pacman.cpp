@@ -142,6 +142,10 @@ void Game::compute(ANAL::IArcade &arcade)
         this->m_player_name = arcade.getPlayerName();
     if (this->m_best_score == -1)
         this->m_best_score = arcade.getPlayerHighscore(this->m_player_name);
+    if (this->m_player.getScore() > this->m_best_score && this->m_player.getState() == Player::DEAD) {
+	this->m_best_score = this->m_player.getScore();
+	arcade.setPlayerHighscore(this->m_best_score);
+    }
     if (this->m_player.getState() == Player::DEAD)
     {
         if (this->m_player.getScore() > this->m_best_score)
