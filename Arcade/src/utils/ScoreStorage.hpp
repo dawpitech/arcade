@@ -41,7 +41,6 @@ class SaveFile
                 if (saveFile.magic_bytes != MAGIC_BYTES)
                     throw ScoreFileException("Save file corrupted");
                 file.close();
-                std::cout << "save loaded" << std::endl;
             } else
                 createSaveFile();
 
@@ -57,7 +56,6 @@ class SaveFile
             }
 
             if (!game_found) {
-                std::cout << "Game not found, creating..." << std::endl;
                 for (auto &[r_game_name, r_username, r_score] : saveFile.game_saves) {
                     if (r_game_name[0] == '\0') {
                         std::strncpy(r_game_name, gameName.c_str(), gameName.size());
