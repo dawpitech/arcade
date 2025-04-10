@@ -15,13 +15,21 @@
 #include "ANAL/IModule.hpp"
 #include "ANAL/Vector2.hpp"
 
+void arcade::games::Snake::moveBerryRandom()
+{
+    this->_berryPos = {
+        std::uniform_int_distribution{2, 29}(this->_rng),
+        std::uniform_int_distribution{3, 29}(this->_rng)
+    };
+}
+
 void arcade::games::Snake::init()
 {
     this->_playerName = "";
     this->_gameEnded = false;
     this->_bestScore = -1;
     this->_score = 0;
-    this->_berryPos = {10, 10};
+    this->moveBerryRandom();
     this->_currentMap = MAP;
     this->_snake.clear();
     this->_snake.emplace_back(15, 15);
@@ -92,9 +100,7 @@ void arcade::games::Snake::compute(ANAL::IArcade &arcade)
     {
         _score += 100;
         do
-        {
-            _berryPos = {rand() % 28 + 1, rand() % 30};
-        }
+            this->moveBerryRandom();
         while (_currentMap[_berryPos.y][_berryPos.x - 1] != ' ');
     }
     else

@@ -17,7 +17,7 @@ namespace arcade::games
     class Snake final : public ANAL::IGame
     {
         public:
-            Snake() { this->init(); }
+            Snake(): _rng(_rd()) { this->init(); }
             ~Snake() override = default;
 
             void processEvents(std::vector<ANAL::Event> &) override;
@@ -36,6 +36,10 @@ namespace arcade::games
             bool _gameEnded{};
             int _score{};
             int _bestScore{};
+
+            std::random_device _rd;
+            std::mt19937 _rng;
+            void moveBerryRandom();
 
             const std::vector<std::string> MAP = {
                 ".............................",
