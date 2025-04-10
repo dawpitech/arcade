@@ -25,5 +25,7 @@ add_subdirectory(Arcade)
 add_subdirectory(Renderers/SFML)
 add_subdirectory(Renderers/SDL)
 add_subdirectory(Renderers/NCURSES)
+
 add_subdirectory(Games/Pacman)
 add_subdirectory(Games/Snake)
+add_subdirectory(Games/Minesweeper)
