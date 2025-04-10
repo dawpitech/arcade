@@ -48,6 +48,8 @@ class SaveFile
             bool game_found = false;
             for (auto &[r_game_name, r_username, r_score] : saveFile.game_saves) {
                 if (r_game_name == gameName && r_username == playername) {
+                    if (r_score == score)
+                        return;
                     r_score = score;
                     game_found = true;
                     break;
