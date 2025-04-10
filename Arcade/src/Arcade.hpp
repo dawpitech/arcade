@@ -46,11 +46,11 @@ class Arcade final : public ANAL::IArcade
 
         [[nodiscard]] const std::vector<std::string>& getGamesList() const;
         void launchGame(int idx);
-        void launchGame();
+        void nextGame();
 
         [[nodiscard]] const std::vector<std::string>& getRenderersList() const;
         void setRenderer(int idx);
-        void setRenderer();
+        void nextRenderer();
 
         void setPlayername(const std::string& playername);
 
