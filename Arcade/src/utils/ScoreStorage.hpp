@@ -115,14 +115,14 @@ class SaveFile
         }
 
         typedef struct game_save_s {
-            char game_name[64];
+            char game_name[32];
             char username[5];
             int score;
         } game_save_t;
 
         typedef struct save_file_s {
             unsigned short magic_bytes;
-            game_save_t game_saves[8];
+            game_save_t game_saves[32];
         } save_file_t;
 };
 
