@@ -43,7 +43,7 @@ void MainMenu::compute(ANAL::IArcade& arcade)
     auto& my_arcade = dynamic_cast<Arcade&>(arcade);
     this->selected_index = std::clamp(this->selected_index, 0,
         static_cast<int>(my_arcade.getGamesList().size() + my_arcade.getRenderersList().size()));
-    this->selected_chr = std::clamp(this->selected_chr, 0, 4);
+    this->selected_chr = std::clamp(this->selected_chr, 1, 4);
 
     my_arcade.setPlayername(this->_playername);
 
@@ -86,8 +86,6 @@ void MainMenu::render(ANAL::IRenderer& renderer, const ANAL::IArcade& arcade)
         this->selected_chr = 0;
     } else if (this->selected_chr > 0) {
         renderer.drawText("^", ANAL::Vector2(1 + selected_chr, 8 + games_len + renderers_len));
-    } else {
-        renderer.drawText("-> ", ANAL::Vector2(0,  7 + games_len + renderers_len));
     }
 
     for (int i = 0; i < 4; i++)
