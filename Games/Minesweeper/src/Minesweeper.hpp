@@ -9,37 +9,32 @@
     #define MINESWEEPER_HPP
 
     #define EXIT_FAILURE_TECH 84
-    #define SIZE_ARRAY_ROW 16
-    #define SIZE_ARRAY_CELL 30
-    #define NUMBER_OF_BOMBS 99
 
     #include <array>
     #include <cstdio>
 
-    #include "ANAL/Vector2.hpp"
     #include "ANAL/IGame.hpp"
-
+    #include "ANAL/Vector2.hpp"
 
 namespace Minesweeper
 {
-    class Mines
+    class Cell
     {
         public:
-            Mines() = default;
-            ~Mines() = default;
+            Cell() = default;
+            ~Cell() = default;
 
-            bool getVisible() const { return visible; }
-            bool getBomb() const { return bomb; }
-            bool getFlag() const { return flag; }
-            int getNumber() const { return number; }
+            [[nodiscard]] bool isVisible() const { return visible; }
+            [[nodiscard]] bool isBomb() const { return bomb; }
+            [[nodiscard]] bool isFlag() const { return flag; }
+            [[nodiscard]] int getNumber() const { return number; }
 
-            void setVisible(bool isVisible) { visible = isVisible; }
-            void setBomb(bool isBomb) { bomb = isBomb; }
-            void setFlag(bool isFlag) { flag = isFlag; }
-            void setNumber(int isNumber) { number = isNumber; }
+            void setVisible(const bool isVisible) { visible = isVisible; }
+            void setBomb(const bool isBomb) { bomb = isBomb; }
+            void setFlag(const bool isFlag) { flag = isFlag; }
+            void setNumber(const int isNumber) { number = isNumber; }
 
-            void reset()
-            {
+            void reset() {
                 visible = false;
                 bomb = false;
                 flag = false;
@@ -53,85 +48,68 @@ namespace Minesweeper
             int number = 0;
     };
 
-    class Board : public Mines
+    class Board
     {
         public:
             Board();
             ~Board() = default;
-            std::array<std::array<Minesweeper::Mines, SIZE_ARRAY_CELL>, SIZE_ARRAY_ROW>& getMap() { return _map; };
-            bool verifMapIsEmpty();
+
+            static constexpr std::size_t SIZE_ARRAY_ROW = 16;
+            static constexpr std::size_t SIZE_ARRAY_CELL = 30;
+
+            std::array<std::array<Cell, SIZE_ARRAY_CELL>, SIZE_ARRAY_ROW>& getMap() { return _map; }            bool verifMapIsEmpty();
             void initializeMap();
-            void clearMap();
             void placeMine();
-            int conditionAdjBomb(int, int);
+            int conditionAdjBomb(const ANAL::Vector2<int>& coords);
             void adjacentBombs();
-            void adjacentEmpty(int, int);
             
 
-            bool isBomb(ANAL::Vector2<int>);
-            bool isFlag(ANAL::Vector2<int>);
-            bool isVisible(ANAL::Vector2<int>);
-            int isNumber(ANAL::Vector2<int>);
+            Cell& getCell(const ANAL::Vector2<int>& coords);
 
             std::vector<std::string> mapToDisplay();
 
-            bool win();
-            bool bombDiscover();
-
             void mapVisible();
-            void toVisible(int _coorX, int _coorY);
-
-            void toFlag(int, int);
-            void unFlag(int, int);
+            void toVisible(const ANAL::Vector2<int>& coords);
 
         private:
-            int conditionAdjacent(int, int);
-            std::array<std::array<Minesweeper::Mines, SIZE_ARRAY_CELL>, SIZE_ARRAY_ROW> _map = {};
+            std::array<std::array<Cell, SIZE_ARRAY_CELL>, SIZE_ARRAY_ROW> _map = {};
     };
 
-    class Game : public ANAL::IGame
+    class Minesweeper final : public ANAL::IGame
     {
         public:
             enum STATE {
-                RESTART,
-                HAS_RESTART,
-                EMPTY_MAP,
-                WORKS,
+                RESTARTING,
+                RUNNING,
                 DEFEAT,
-                WIN
+                WIN,
             };
-            enum CLICK {
-                RIGHT,
-                LEFT,
-                UNKNOWN
-            };
-            Game();
-            ~Game() = default;
+            Minesweeper() { this->init(); }
+            ~Minesweeper() override = default;
             
             void processEvents(std::vector<ANAL::Event>&) override;
             void compute(ANAL::IArcade& arcade) override;
             void render(ANAL::IRenderer& renderer, const ANAL::IArcade& arcade) override;
-            
-            const STATE getState() { return this->m_state; };
-            const CLICK getClick() { return this->m_click; };
-            const ANAL::State getMouse() { return this->m_mouse; };
+
+            [[nodiscard]] STATE getState() const { return this->_state; }
+            void setState(const STATE state) { this->_state = state; }
+
+            static constexpr std::size_t NUMBER_OF_BOMBS = 50;
 
         private:
             void init();
-            void restart();
-            int bBF();
+            void restart() { this->init(); }
 
             Board _board;
-            STATE m_state;
-            CLICK m_click;
-            ANAL::State m_mouse;
-            std::vector<std::string> _mapDisplay = {};
-            ANAL::Vector2<int> _coor{0, 0};
-	        std::string m_player_name;
-            int m_bestscore;
-            bool _fClick = true;
-            int _bombflagged = 0;
+            STATE _state{};
+            std::vector<std::string> _currentMap = {};
+	        std::string _playername{};
+            ANAL::Vector2<int> _lastClickPos{0, 0};
+            int _bestScore{};
+            bool _firstClick = true;
+            int _bombFlagged{};
             int _flags = NUMBER_OF_BOMBS;
+            std::size_t _frame{};
     };
 } // namespace Minesweeper
 
