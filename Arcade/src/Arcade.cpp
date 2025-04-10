@@ -32,8 +32,7 @@ void Arcade::launch()
         const auto needed = now + std::chrono::operator ""ms(33);
 
 	    auto events = this->_renderer->getEvents();
-        if (dynamic_cast<MainMenu*>(this->_game.get()) == nullptr)
-            this->handleHotKeys(events);
+        this->handleHotKeys(dynamic_cast<MainMenu*>(this->_game.get()) != nullptr, events);
         this->_game->processEvents(events);
         this->_game->compute(*this);
         this->_game->render(*this->_renderer, *this);
@@ -74,12 +73,14 @@ void Arcade::scanForModules()
     } catch (SafeDirectoryLister::NoMoreFileException&) {}
 }
 
-void Arcade::handleHotKeys(const std::vector<ANAL::Event>& events)
+void Arcade::handleHotKeys(const bool bypass, const std::vector<ANAL::Event>& events)
 {
     for (const auto &[type, keyEvent, mouseEvent, closeEvent] : events)
     {
         if (type == ANAL::EventType::CLOSE)
             this->run = false;
+        if (bypass)
+            continue;
         if (type == ANAL::EventType::KEYBOARD && keyEvent.value().key == ANAL::Keys::KEY_N && keyEvent.value().state == ANAL::State::PRESSED) {
             this->nextGame();
             return;
@@ -168,11 +169,15 @@ const std::string &Arcade::getPlayerName() const
 
 void Arcade::setPlayerHighscore(const int score)
 {
+    if (this->_playerName == "????")
+        return;
     SaveFile::saveScore(this->_games.at(this->_game_idx), this->getPlayerName(), score);
 }
 
 int Arcade::getPlayerHighscore(const std::string &playerName) const
 {
+    if (playerName == "????")
+        return 0;
     return SaveFile::loadScore(this->_games.at(this->_game_idx), this->getPlayerName());
 }
 

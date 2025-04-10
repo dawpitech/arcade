@@ -85,11 +85,21 @@ void MainMenu::render(ANAL::IRenderer& renderer, const ANAL::IArcade& arcade)
         selected_renderer = selected_index - games_len;
         this->selected_chr = 0;
     } else if (this->selected_chr > 0) {
+        if (this->_playername == "????")
+            this->_playername = "    ";
         renderer.drawText("^", ANAL::Vector2(1 + selected_chr, 8 + games_len + renderers_len));
     }
 
+    if (this->selected_chr == 0 && this->_playername == "    ")
+        this->_playername = "????";
+
     for (int i = 0; i < 4; i++)
         renderer.drawText(std::string{this->_playername.at(i)}, ANAL::Vector2(2 + i, 7 + games_len + renderers_len));
+
+    if (this->_playername == "????" || this->_playername == "    ") {
+        renderer.drawText("Careful ! without a name your score", ANAL::Vector2(6, 9 + games_len + renderers_len));
+        renderer.drawText("won't be saved", ANAL::Vector2(11, 10 + games_len + renderers_len));
+    }
 
     renderer.drawText("PRO TIPS:", ANAL::Vector2(13, 23));
     renderer.drawText("You can press 'N' to switch to the next game", ANAL::Vector2(5, 24));
