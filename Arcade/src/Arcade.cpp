@@ -8,12 +8,13 @@
 #include <iostream>
 #include <thread>
 
-#include "ANAL/Events.hpp"
 #include "Arcade.hpp"
+#include "ANAL/Events.hpp"
 #include "internals/Asset.hpp"
 #include "internals/Entity.hpp"
 #include "utils/ModuleLoader.hpp"
 #include "utils/SafeDirectoryLister.hpp"
+#include "utils/ScoreStorage.hpp"
 
 void Arcade::printHelp()
 {
@@ -166,14 +167,14 @@ const std::string &Arcade::getPlayerName() const
     return this->_playerName;
 }
 
-void Arcade::setPlayerHighscore(int score)
+void Arcade::setPlayerHighscore(const int score)
 {
-    return;
+    SaveFile::saveScore(this->_games.at(this->_game_idx), this->getPlayerName(), score);
 }
 
 int Arcade::getPlayerHighscore(const std::string &playerName) const
 {
-    return 9999;
+    return SaveFile::loadScore(this->_games.at(this->_game_idx), this->getPlayerName());
 }
 
 void Arcade::setPlayername(const std::string &playername)
