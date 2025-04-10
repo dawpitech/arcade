@@ -41,6 +41,7 @@ arcade::renderers::NCursesRenderer::NCursesRenderer() :
 
 arcade::renderers::NCursesRenderer::~NCursesRenderer()
 {
+    std::signal(SIGINT, SIG_DFL);
     endwin();
     delwin(this->_window);
     set_term(this->_screen);
