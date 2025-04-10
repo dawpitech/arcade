@@ -45,13 +45,15 @@ void Minesweeper::Game::processEvents(std::vector<ANAL::Event> &ev)
         switch (e.type) {
             case ANAL::EventType::MOUSE: {
                 auto mouse = e.mouseEvent.value().key;
-                auto click_mouse = e.mouseEvent.value().state == ANAL::State::RELEASED;
+                auto clickMouse = e.mouseEvent.value().state;
                 if (mouse == ANAL::MouseKeys::LEFT_CLICK) {
                     this->m_click = LEFT;
+                    this->m_mouse = clickMouse;
                     _new_coor = e.mouseEvent.value().coords;
                 }
                 if (mouse == ANAL::MouseKeys::RIGHT_CLICK) {
                     this->m_click = RIGHT;
+                    this->m_mouse = clickMouse;
                     _new_coor = e.mouseEvent.value().coords;
                 }
                 break;
@@ -88,18 +90,9 @@ void Minesweeper::Game::processEvents(std::vector<ANAL::Event> &ev)
     this->_coor = _new_coor;
     this->_coor.x = this->_coor.x - 1;
     this->_coor.y = this->_coor.y - 7;
-    if ((this->_coor.x < 0 || this->_coor.y < 0) || (this->_coor.x > SIZE_ARRAY_CELL - 1 || this->_coor.y > SIZE_ARRAY_ROW - 1)) {
+    if ((this->_coor.x < 0 || this->_coor.y < 0) || (this->_coor.x > SIZE_ARRAY_CELL - 1 || this->_coor.y > SIZE_ARRAY_ROW - 1))
         this->m_click = UNKNOWN;
-        return;
-    }
-}
-
-void Minesweeper::Game::compute(ANAL::IArcade& arcade) {
-    if (this->m_player_name == "")
-	    this->m_player_name = arcade.getPlayerName();
-    if (this->m_bestscore == -1)
-	    this->m_bestscore = arcade.getPlayerHighscore(this->m_player_name);
-    if (this->getState() == DEFEAT) {
+        if (this->getState() == DEFEAT) {
         this->_board.mapVisible();
         this->_mapDisplay = this->_board.mapToDisplay();
         return;
@@ -115,6 +108,8 @@ void Minesweeper::Game::compute(ANAL::IArcade& arcade) {
         return;
     }
     if (this->getClick() == LEFT && this->getState() == WORKS) {
+        if (this->_board.isFlag(this->_coor) == true)
+            return;
         if (this->_board.isBomb(this->_coor) == true && this->_fClick == true) {
             this->restart();
             return;
@@ -125,7 +120,6 @@ void Minesweeper::Game::compute(ANAL::IArcade& arcade) {
         this->_board.toVisible(this->_coor.x, this->_coor.y);
     }
     if (this->getClick() == RIGHT && this->getState() == WORKS) {
-        this->_fClick = false;
         if (this->_board.isVisible(this->_coor) == true)
             return;
         if (this->_board.isFlag(this->_coor) == false) {
@@ -139,6 +133,14 @@ void Minesweeper::Game::compute(ANAL::IArcade& arcade) {
         return;
     }
     this->_mapDisplay = this->_board.mapToDisplay();
+}
+
+void Minesweeper::Game::compute(ANAL::IArcade& arcade) {
+    if (this->m_player_name == "")
+	    this->m_player_name = arcade.getPlayerName();
+    if (this->m_bestscore == -1)
+	    this->m_bestscore = arcade.getPlayerHighscore(this->m_player_name);
+    
 }
 
 void Minesweeper::Game::render(ANAL::IRenderer &renderer, const ANAL::IArcade &arcade) {

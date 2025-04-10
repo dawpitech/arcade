@@ -63,7 +63,10 @@ namespace Minesweeper
             void initializeMap();
             void clearMap();
             void placeMine();
+            int conditionAdjBomb(int, int);
             void adjacentBombs();
+            void adjacentEmpty(int, int);
+            
 
             bool isBomb(ANAL::Vector2<int>);
             bool isFlag(ANAL::Vector2<int>);
@@ -79,6 +82,7 @@ namespace Minesweeper
             void toVisible(int _coorX, int _coorY);
 
             void toFlag(int, int);
+            void unFlag(int, int);
 
         private:
             int conditionAdjacent(int, int);
@@ -110,6 +114,7 @@ namespace Minesweeper
             
             const STATE getState() { return this->m_state; };
             const CLICK getClick() { return this->m_click; };
+            const ANAL::State getMouse() { return this->m_mouse; };
 
         private:
             void init();
@@ -119,6 +124,7 @@ namespace Minesweeper
             Board _board;
             STATE m_state;
             CLICK m_click;
+            ANAL::State m_mouse;
             std::vector<std::string> _mapDisplay = {};
             ANAL::Vector2<int> _coor{0, 0};
 	        std::string m_player_name;
