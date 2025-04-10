@@ -54,7 +54,7 @@ void Game::deinit() { this->m_ghosts.clear(); }
 void Game::init()
 {
     this->m_player = Player();
-    this->m_player_name = "";
+    this->m_player_name.clear();
     this->_pacmanmap = pacmanmap_org;
     this->m_time_ghosts = 280; // 280;
     this->m_ghosts.emplace_back(ANAL::Vector2(15, 14), "red");
@@ -138,7 +138,7 @@ void Game::processEvents(std::vector<ANAL::Event> &ev)
 
 void Game::compute(ANAL::IArcade &arcade)
 {
-    if (this->m_player_name == "")
+    if (this->m_player_name.empty())
         this->m_player_name = arcade.getPlayerName();
     if (this->m_best_score == -1)
         this->m_best_score = arcade.getPlayerHighscore(this->m_player_name);
