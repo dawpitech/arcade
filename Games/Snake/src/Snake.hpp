@@ -40,6 +40,7 @@ namespace arcade::games
             std::random_device _rd;
             std::mt19937 _rng;
             void moveBerryRandom();
+            bool spaceLeft();
 
             const std::vector<std::string> MAP = {
                 ".............................",

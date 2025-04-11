@@ -33,6 +33,9 @@ void arcade::games::Snake::init()
     this->_currentMap = MAP;
     this->_snake.clear();
     this->_snake.emplace_back(15, 15);
+    this->_snake.emplace_back(14, 15);
+    this->_snake.emplace_back(13, 15);
+    this->_snake.emplace_back(12, 15);
     this->_direction = {1, 0};
     this->_currentMap[15][15] = '@';
 }
@@ -56,6 +59,20 @@ void arcade::games::Snake::processEvents(std::vector<ANAL::Event> &ev)
                 this->restart();
         }
     }
+}
+
+bool arcade::games::Snake::spaceLeft()
+{
+    bool space = false;
+    for (int i = 0; i < 32; i++)
+        for (int j = 0; j < 30; j++)
+            if (_currentMap[i][j] == ' ')
+                space = true;
+    if (!space) {
+        _gameEnded = true;
+        return false;
+    }
+    return true;
 }
 
 void arcade::games::Snake::compute(ANAL::IArcade &arcade)
@@ -99,6 +116,8 @@ void arcade::games::Snake::compute(ANAL::IArcade &arcade)
     if (new_head.x == _berryPos.x && new_head.y == _berryPos.y)
     {
         _score += 100;
+        if (!spaceLeft())
+            return;
         do
             this->moveBerryRandom();
         while (_currentMap[_berryPos.y][_berryPos.x - 1] != ' ');
@@ -168,7 +187,7 @@ void arcade::games::Snake::render(ANAL::IRenderer &renderer, const ANAL::IArcade
     {
         if ((frame / 20) % 2 == 0)
         {
-            renderer.drawText(" arcade::games::Snake Over", ANAL::Vector2(13, 13));
+            renderer.drawText("Game Over", ANAL::Vector2(13, 13));
             renderer.drawText("Player: " + this->_playerName, ANAL::Vector2(13, 14));
             renderer.drawText("Score: " + std::to_string(this->_score), ANAL::Vector2(13, 15));
             renderer.drawText("Best: " + std::to_string(this->_bestScore), ANAL::Vector2(13, 16));
