@@ -76,6 +76,9 @@ namespace arcade::renderers
                 {KEY_LEFT, ANAL::Keys::ARROW_LEFT},
                 {KEY_RIGHT, ANAL::Keys::ARROW_RIGHT},
                 {KEY_DOWN, ANAL::Keys::ARROW_DOWN},
+                {' ', ANAL::Keys::SPECIAL_KEY_SPACE},
+                {KEY_BACKSPACE, ANAL::Keys::SPECIAL_KEY_BACKSPACE},
+                {'\n', ANAL::Keys::SPECIAL_KEY_ENTER},
             };
     };
 }

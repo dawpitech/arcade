@@ -81,6 +81,9 @@ namespace arcade::renderers
                 {sf::Keyboard::Left, ANAL::Keys::ARROW_LEFT},
                 {sf::Keyboard::Right, ANAL::Keys::ARROW_RIGHT},
                 {sf::Keyboard::Down, ANAL::Keys::ARROW_DOWN},
+                {sf::Keyboard::Space, ANAL::Keys::SPECIAL_KEY_SPACE},
+                {sf::Keyboard::Backspace, ANAL::Keys::SPECIAL_KEY_BACKSPACE},
+                {sf::Keyboard::Enter, ANAL::Keys::SPECIAL_KEY_ENTER},
             };
     };
 }

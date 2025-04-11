@@ -87,6 +87,9 @@ namespace arcade::renderers
                 {SDLK_LEFT, ANAL::Keys::ARROW_LEFT},
                 {SDLK_RIGHT, ANAL::Keys::ARROW_RIGHT},
                 {SDLK_DOWN, ANAL::Keys::ARROW_DOWN},
+                {SDLK_SPACE, ANAL::Keys::SPECIAL_KEY_SPACE},
+                {SDLK_BACKSPACE, ANAL::Keys::SPECIAL_KEY_BACKSPACE},
+                {SDLK_RETURN, ANAL::Keys::SPECIAL_KEY_ENTER},
             };
     };
 }

@@ -25,7 +25,7 @@ void MainMenu::processEvents(std::vector<ANAL::Event>& events)
             this->selected_chr--;
         if (keyEvent.value().key == ANAL::Keys::ARROW_RIGHT && keyEvent.value().state == ANAL::State::PRESSED)
             this->selected_chr++;
-        if (keyEvent.value().key == ANAL::Keys::KEY_E && keyEvent.value().state == ANAL::State::PRESSED && selected_chr == 0)
+        if (keyEvent.value().key == ANAL::Keys::SPECIAL_KEY_ENTER && keyEvent.value().state == ANAL::State::PRESSED && selected_chr == 0)
             this->enter = true;
         if (keyEvent.value().state == ANAL::State::PRESSED && selected_chr > 0) {
             if (const char chr = analUtils::analKeyToAscii(keyEvent.value().key); chr != '?')
