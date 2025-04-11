@@ -139,7 +139,10 @@ void Minesweeper::Board::toVisible(const ANAL::Vector2<int>& coords) {
 
 void Minesweeper::Board::mapVisible() {
     for (auto &row : this->getMap()) {
-        for (auto &cell : row)
+        for (auto &cell : row) {
+            if (cell.isFlag() && cell.isBomb())
+                continue;
             cell.setVisible(true);
+        }
     }
 }
