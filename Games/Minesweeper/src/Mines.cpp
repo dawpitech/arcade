@@ -24,37 +24,41 @@ void Minesweeper::Board::placeMine()
     while (minesPlaced < Minesweeper::NUMBER_OF_BOMBS) {
         const int cell = rand() % SIZE_ARRAY_CELL;
         const int row = rand() % SIZE_ARRAY_ROW;
-        if (auto &map = getMap(); !map.at(row).at(cell).isBomb()) {
+        if (auto &map = getMap(); !map.at(row).at(cell).isBomb())
+        {
             this->getCell(ANAL::Vector2{cell, row}).setBomb(true);
             minesPlaced++;
         }
     }
 }
 
-int Minesweeper::Board::conditionAdjBomb(const ANAL::Vector2<int>& coords)
+int Minesweeper::Board::conditionAdjBomb(const ANAL::Vector2<int> &coords)
 {
     int count = 0;
 
-    //up
+    // up
     if (coords.y > 0 && coords.x > 0 && this->getCell(ANAL::Vector2{coords.x - 1, coords.y - 1}).isBomb())
         count++;
     if (coords.y > 0 && this->getCell(ANAL::Vector2{coords.x, coords.y - 1}).isBomb())
         count++;
-    if (coords.y > 0 && coords.x + 1 < SIZE_ARRAY_CELL && this->getCell(ANAL::Vector2{coords.x + 1, coords.y - 1}).isBomb())
+    if (coords.y > 0 && coords.x + 1 < SIZE_ARRAY_CELL &&
+        this->getCell(ANAL::Vector2{coords.x + 1, coords.y - 1}).isBomb())
         count++;
 
-    //middle
+    // middle
     if (coords.x > 0 && this->getCell(ANAL::Vector2{coords.x - 1, coords.y}).isBomb())
         count++;
     if (coords.x + 1 < SIZE_ARRAY_CELL && this->getCell(ANAL::Vector2{coords.x + 1, coords.y}).isBomb())
         count++;
 
-    //down
-    if (coords.y + 1 < SIZE_ARRAY_ROW && coords.x > 0 && this->getCell(ANAL::Vector2{coords.x - 1, coords.y + 1}).isBomb())
+    // down
+    if (coords.y + 1 < SIZE_ARRAY_ROW && coords.x > 0 &&
+        this->getCell(ANAL::Vector2{coords.x - 1, coords.y + 1}).isBomb())
         count++;
     if (coords.y + 1 < SIZE_ARRAY_ROW && this->getCell(ANAL::Vector2{coords.x, coords.y + 1}).isBomb())
         count++;
-    if (coords.y + 1 < SIZE_ARRAY_ROW && coords.x + 1 < SIZE_ARRAY_CELL && this->getCell(ANAL::Vector2{coords.x + 1, coords.y + 1}).isBomb())
+    if (coords.y + 1 < SIZE_ARRAY_ROW && coords.x + 1 < SIZE_ARRAY_CELL &&
+        this->getCell(ANAL::Vector2{coords.x + 1, coords.y + 1}).isBomb())
         count++;
 
     return count;
@@ -62,8 +66,10 @@ int Minesweeper::Board::conditionAdjBomb(const ANAL::Vector2<int>& coords)
 
 void Minesweeper::Board::adjacentBombs()
 {
-    for (size_t row = 0; row < this->getMap().size(); ++row) {
-        for (size_t cell = 0; cell < this->getMap().at(row).size(); ++cell) {
+    for (size_t row = 0; row < this->getMap().size(); ++row)
+    {
+        for (size_t cell = 0; cell < this->getMap().at(row).size(); ++cell)
+        {
             if (this->getMap().at(row).at(cell).isBomb())
                 continue;
             const auto coords = ANAL::Vector2{
@@ -74,6 +80,7 @@ void Minesweeper::Board::adjacentBombs()
         }
     }
 }
+
 
 Minesweeper::Cell &Minesweeper::Board::getCell(const ANAL::Vector2<int> &coords)
 {
@@ -106,15 +113,36 @@ std::vector<std::string> Minesweeper::Board::mapToDisplay() {
     return _mapDisplay;
 }
 
-void Minesweeper::Board::toVisible(const ANAL::Vector2<int>& coords)
-{
+void Minesweeper::Board::revealEmptyCell(const ANAL::Vector2<int> &coords) {
+    for (int y = -1; y <= 1; ++y) {
+        for (int x = -1; x <= 1; ++x) {
+            const auto newCoords = ANAL::Vector2{coords.x + x, coords.y + y};
+            if (newCoords.x < 0 || newCoords.x >= SIZE_ARRAY_CELL ||
+                newCoords.y < 0 || newCoords.y >= SIZE_ARRAY_ROW)
+                continue;
+            if (!this->getCell(newCoords).isVisible() && !this->getCell(newCoords).isBomb()) {
+                this->getCell(newCoords).setVisible(true);
+                if (this->getCell(newCoords).getNumber() == 0)
+                    revealEmptyCell(newCoords);
+            }
+        }
+    }
+}
+
+void Minesweeper::Board::toVisible(const ANAL::Vector2<int>& coords) {
+    if (this->getMap().at(coords.y).at(coords.x).getNumber() == 0) {
+        revealEmptyCell(coords);
+        return;
+    }
     this->getMap().at(coords.y).at(coords.x).setVisible(true);
 }
 
-void Minesweeper::Board::mapVisible()
-{
+void Minesweeper::Board::mapVisible() {
     for (auto &row : this->getMap()) {
-        for (auto &cell : row)
+        for (auto &cell : row) {
+            if (cell.isFlag() && cell.isBomb())
+                continue;
             cell.setVisible(true);
+        }
     }
 }

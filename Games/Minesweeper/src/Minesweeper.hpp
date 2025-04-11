@@ -60,11 +60,12 @@ namespace Minesweeper
             std::array<std::array<Cell, SIZE_ARRAY_CELL>, SIZE_ARRAY_ROW>& getMap() { return _map; }            bool verifMapIsEmpty();
             void initializeMap();
             void placeMine();
-            int conditionAdjBomb(const ANAL::Vector2<int>& coords);
+            int conditionAdjBomb(const ANAL::Vector2<int> &coords);
+            void revealEmptyCell(const ANAL::Vector2<int> &coords);
             void adjacentBombs();
-            
 
-            Cell& getCell(const ANAL::Vector2<int>& coords);
+
+            Cell & getCell(const ANAL::Vector2<int>& coords);
 
             std::vector<std::string> mapToDisplay();
 
