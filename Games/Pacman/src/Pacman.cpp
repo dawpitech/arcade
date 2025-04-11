@@ -7,6 +7,7 @@
 
 #include "Pacman.hpp"
 #include <algorithm>
+#include <iostream>
 #include <random>
 #include <string>
 #include <vector>
@@ -100,6 +101,18 @@ void arcade::games::Pacman::processEvents(std::vector<ANAL::Event> &ev)
         this->_player.tickReset();
         this->_player.setState(Player::HIGH);
     }
+    if (this->_currentMap[new_y][new_x] == '!')
+    {
+        if (this->_player.getPos().x + add_x == 29) {
+            add_x -= 26;
+        } else if (this->_player.getPos().x + add_x == 2) {
+            add_x += 26;
+        }
+        this->_player.setPos(ANAL::Vector2{this->_player.getPos().x + add_x, this->_player.getPos().y + add_y});
+        add_x = 0;
+        add_y = 0;
+        return;
+    }
     this->_player.setPos(ANAL::Vector2{this->_player.getPos().x + add_x, this->_player.getPos().y + add_y});
 }
 
@@ -191,13 +204,17 @@ void arcade::games::Pacman::compute(ANAL::IArcade &arcade)
                 }
             }
             std::vector<ANAL::Vector2<int>> valid_moves;
-            if (this->_currentMap[pos.y][pos.x - 1 - 1] != '#' && this->_currentMap[pos.y][pos.x - 1 - 1] != '_')
+            if (this->_currentMap[pos.y][pos.x - 1 - 1] != '#' && this->_currentMap[pos.y][pos.x - 1 - 1] != '_'
+                && this->_currentMap[pos.y][pos.x - 1 - 1] != '!')
                 valid_moves.emplace_back(pos.x - 1, pos.y);
-            if (this->_currentMap[pos.y][pos.x + 1 - 1] != '#' && this->_currentMap[pos.y][pos.x + 1 - 1] != '_')
+            if (this->_currentMap[pos.y][pos.x + 1 - 1] != '#' && this->_currentMap[pos.y][pos.x + 1 - 1] != '_'
+                && this->_currentMap[pos.y][pos.x + 1 - 1] != '!')
                 valid_moves.emplace_back(pos.x + 1, pos.y);
-            if (this->_currentMap[pos.y - 1][pos.x - 1] != '#' && this->_currentMap[pos.y - 1][pos.x - 1] != '_')
+            if (this->_currentMap[pos.y - 1][pos.x - 1] != '#' && this->_currentMap[pos.y - 1][pos.x - 1] != '_'
+                && this->_currentMap[pos.y - 1][pos.x - 1] != '!')
                 valid_moves.emplace_back(pos.x, pos.y - 1);
-            if (this->_currentMap[pos.y + 1][pos.x - 1] != '#' && this->_currentMap[pos.y + 1][pos.x - 1] != '_')
+            if (this->_currentMap[pos.y + 1][pos.x - 1] != '#' && this->_currentMap[pos.y + 1][pos.x - 1] != '_'
+                && this->_currentMap[pos.y + 1][pos.x - 1] != '!')
                 valid_moves.emplace_back(pos.x, pos.y + 1);
             ANAL::Vector2<int> prev = last_pos[i];
             valid_moves.erase(
@@ -212,9 +229,9 @@ void arcade::games::Pacman::compute(ANAL::IArcade &arcade)
                 std::shuffle(valid_moves.begin(), valid_moves.end(), rng);
                 const auto p = valid_moves.front();
                 if (p.x > g.getPos().x)
-                    g.setLook(Ghost::LEFT);
-                else
                     g.setLook(Ghost::RIGHT);
+                else
+                    g.setLook(Ghost::LEFT);
                 last_pos[i] = g.getPos();
                 g.setPos(p);
             }
