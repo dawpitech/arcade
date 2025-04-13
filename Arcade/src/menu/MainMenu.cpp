@@ -7,10 +7,11 @@
 
 #include <algorithm>
 
-#include "../utils/KeysToAscii.hpp"
-#include "MainMenu.hpp"
 #include "../Arcade.hpp"
+#include "../utils/KeysToAscii.hpp"
+#include "../utils/ScoreStorage.hpp"
 #include "ANAL/IModule.hpp"
+#include "MainMenu.hpp"
 
 void MainMenu::processEvents(std::vector<ANAL::Event>& events)
 {
@@ -45,14 +46,18 @@ void MainMenu::compute(ANAL::IArcade& arcade)
         static_cast<int>(my_arcade.getGamesList().size() + my_arcade.getRenderersList().size()));
     this->selected_chr = std::clamp(this->selected_chr, 1, 4);
 
+    if (init)
+        this->_playername = arcade.getPlayerName();
+    this->init = false;
     my_arcade.setPlayername(this->_playername);
 
     if (!this->enter)
         return;
-    if (selected_index < my_arcade.getGamesList().size())
+    if (selected_index < my_arcade.getGamesList().size()) {
         my_arcade.launchGame(this->selected_game);
-    else
-        my_arcade.setRenderer(this->selected_renderer);
+        return;
+    }
+    my_arcade.setRenderer(this->selected_renderer);
     this->enter = false;
 }
 
@@ -101,9 +106,15 @@ void MainMenu::render(ANAL::IRenderer& renderer, const ANAL::IArcade& arcade)
         renderer.drawText("won't be saved", ANAL::Vector2(11, 10 + games_len + renderers_len));
     }
 
-    renderer.drawText("PRO TIPS:", ANAL::Vector2(13, 23));
-    renderer.drawText("You can press 'N' to switch to the next game", ANAL::Vector2(5, 24));
-    renderer.drawText("You can press 'B' to switch renderer", ANAL::Vector2(7, 25));
+    renderer.drawText("PRO TIPS:", ANAL::Vector2(13, 21));
+    renderer.drawText("You can press 'N' to switch to the next game", ANAL::Vector2(5, 22));
+    renderer.drawText("You can press 'B' to switch renderer", ANAL::Vector2(7, 23));
+    renderer.drawText("You can press 'R' to restart a game", ANAL::Vector2(7, 24));
+    renderer.drawText("You can press 'M' to go back to the menu", ANAL::Vector2(6, 25));
+    renderer.drawText("You can press 'Q' to quit", ANAL::Vector2(9, 26));
+
+    renderer.drawText("Last score:", ANAL::Vector2(13, 28));
+    renderer.drawText(std::to_string(SaveFile::loadScore(my_arcade.getLastGameName(), this->_playername)), ANAL::Vector2(14, 29));
 
     renderer.render();
 }

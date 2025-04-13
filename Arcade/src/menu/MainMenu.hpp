@@ -27,5 +27,6 @@ class MainMenu final : public ANAL::IGame
         int selected_renderer = 0;
         int selected_chr = 0;
         bool enter = false;
+        bool init = true;
 };
 #endif //MAINMENU_HPP

@@ -52,7 +52,11 @@ class Arcade final : public ANAL::IArcade
         void setRenderer(int idx);
         void nextRenderer();
 
+        void restartGame();
+        void loadMenu();
+
         void setPlayername(const std::string& playername);
+        [[nodiscard]] const std::string& getLastGameName() const;
 
         SafeDL::safeHandle _game_so_handle;
         SafeDL::safeHandle _renderer_so_handle;
@@ -66,6 +70,7 @@ class Arcade final : public ANAL::IArcade
         std::size_t _renderer_idx = 0;
         bool run = true;
         std::string _playerName = "????";
+        std::string _lastGame;
 
         static bool str_ends_with(const std::string&, const std::string&);
 };

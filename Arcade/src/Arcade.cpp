@@ -91,7 +91,32 @@ void Arcade::handleHotKeys(const bool bypass, const std::vector<ANAL::Event>& ev
             this->nextRenderer();
             return;
         }
+        if (type == ANAL::EventType::KEYBOARD && keyEvent->key == ANAL::Keys::KEY_R && keyEvent->state == ANAL::State::PRESSED) {
+            this->restartGame();
+            return;
+        }
+        if (type == ANAL::EventType::KEYBOARD && keyEvent->key == ANAL::Keys::KEY_M && keyEvent->state == ANAL::State::PRESSED) {
+            this->loadMenu();
+            return;
+        }
+        if (type == ANAL::EventType::KEYBOARD && keyEvent->key == ANAL::Keys::KEY_Q && keyEvent->state == ANAL::State::PRESSED) {
+            this->run = false;
+            return;
+        }
     }
+}
+
+void Arcade::restartGame()
+{
+    this->launchGame(static_cast<int>(this->_game_idx));
+}
+
+void Arcade::loadMenu()
+{
+    this->_game_idx = 0;
+    this->_game.reset();
+    this->_game_so_handle.reset();
+    this->_game = std::make_unique<MainMenu>();
 }
 
 void Arcade::setGame(std::unique_ptr<ANAL::IGame>& game)
@@ -136,32 +161,36 @@ const std::vector<std::string> &Arcade::getRenderersList() const
 
 void Arcade::launchGame(const int idx)
 {
+    this->_lastGame = this->_games.at(this->_game_idx);
     this->_game_idx = idx;
-    this->nextGame();
+    auto new_handle = SafeDL::open("./lib/" + this->_games.at(this->_game_idx), RTLD_LAZY);
+    this->_game.reset();
+    this->_game = ModuleLoader::loadGame(new_handle);
+    this->_game_so_handle.reset();
+    this->_game_so_handle.swap(new_handle);
+    this->_game_idx = idx;
 }
 
 void Arcade::nextGame()
 {
-    auto new_handle = SafeDL::open("./lib/" + this->_games.at(this->_game_idx), RTLD_LAZY);
     this->_game_idx = (this->_game_idx + 1) % this->_games.size();
-    this->_game = ModuleLoader::loadGame(new_handle);
-    this->_game_so_handle.swap(new_handle);
+    this->launchGame(static_cast<int>(this->_game_idx));
 }
 
 void Arcade::setRenderer(const int idx)
 {
     this->_renderer_idx = idx;
-    this->nextRenderer();
-}
-
-void Arcade::nextRenderer()
-{
     auto new_handle = SafeDL::open("./lib/" + this->_renderers.at(this->_renderer_idx), RTLD_LAZY);
-    this->_renderer_idx = (this->_renderer_idx + 1) % this->_renderers.size();
     this->_renderer.reset();
     this->_renderer = ModuleLoader::loadRenderer(new_handle);
     this->_renderer_so_handle.reset();
     this->_renderer_so_handle = std::move(new_handle);
+}
+
+void Arcade::nextRenderer()
+{
+    this->_renderer_idx = (this->_renderer_idx + 1) % this->_renderers.size();
+    this->setRenderer(static_cast<int>(this->_renderer_idx));
 }
 
 const std::string &Arcade::getPlayerName() const
@@ -186,4 +215,9 @@ int Arcade::getPlayerHighscore(const std::string &playerName) const
 void Arcade::setPlayername(const std::string &playername)
 {
     this->_playerName = playername;
+}
+
+const std::string &Arcade::getLastGameName() const
+{
+    return this->_lastGame;
 }
