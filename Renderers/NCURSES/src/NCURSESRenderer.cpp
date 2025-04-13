@@ -26,13 +26,14 @@ arcade::renderers::NCursesRenderer::NCursesRenderer() :
     _window(nullptr), _events({}), _screen(newterm(nullptr, stdout, stdin))
 {
     std::signal(SIGINT, sigint_handler);
-    keypad(_window, TRUE);
     raw();
     noecho();
     cbreak();
     curs_set(0);
     keypad(stdscr, TRUE);
     nodelay(stdscr, TRUE);
+    mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, nullptr);
+    mouseinterval(0);
     this->_window = stdscr;
 
     this->_backupbuffer = std::cout.rdbuf();
@@ -89,13 +90,12 @@ std::vector<ANAL::Event> &arcade::renderers::NCursesRenderer::getEvents()
 
         if (chr == KEY_MOUSE) {
             MEVENT mouseEvent;
-            ev.type = ANAL::EventType::MOUSE;
-            ev.mouseEvent = {
-                .coords = ANAL::Vector2(mouseEvent.x / 16, mouseEvent.y / 16),
-            };
 
             if (getmouse(&mouseEvent) != OK)
                 throw Exception();
+
+            ev.type = ANAL::EventType::MOUSE;
+            ev.mouseEvent = { .coords = ANAL::Vector2(mouseEvent.x, mouseEvent.y) };
 
             for (const auto &[mask, key] : MOUSEBINDS_LIST) {
                 if (!(mouseEvent.bstate & mask))
