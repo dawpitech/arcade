@@ -17,18 +17,18 @@ void MainMenu::processEvents(std::vector<ANAL::Event>& events)
     for (const auto &[type, keyEvent, mouseEvent, closeEvent] : events) {
         if (type != ANAL::EventType::KEYBOARD)
             continue;
-        if (keyEvent.value().key == ANAL::Keys::ARROW_DOWN && keyEvent.value().state == ANAL::State::PRESSED)
+        if (keyEvent->key == ANAL::Keys::ARROW_DOWN && keyEvent->state == ANAL::State::PRESSED)
             this->selected_index++;
-        if (keyEvent.value().key == ANAL::Keys::ARROW_UP && keyEvent.value().state == ANAL::State::PRESSED)
+        if (keyEvent->key == ANAL::Keys::ARROW_UP && keyEvent->state == ANAL::State::PRESSED)
             this->selected_index--;
-        if (keyEvent.value().key == ANAL::Keys::ARROW_LEFT && keyEvent.value().state == ANAL::State::PRESSED)
+        if (keyEvent->key == ANAL::Keys::ARROW_LEFT && keyEvent->state == ANAL::State::PRESSED)
             this->selected_chr--;
-        if (keyEvent.value().key == ANAL::Keys::ARROW_RIGHT && keyEvent.value().state == ANAL::State::PRESSED)
+        if (keyEvent->key == ANAL::Keys::ARROW_RIGHT && keyEvent->state == ANAL::State::PRESSED)
             this->selected_chr++;
-        if (keyEvent.value().key == ANAL::Keys::SPECIAL_KEY_ENTER && keyEvent.value().state == ANAL::State::PRESSED && selected_chr == 0)
+        if (keyEvent->key == ANAL::Keys::SPECIAL_KEY_ENTER && keyEvent->state == ANAL::State::PRESSED && selected_chr == 0)
             this->enter = true;
-        if (keyEvent.value().state == ANAL::State::PRESSED && selected_chr > 0) {
-            if (const char chr = analUtils::analKeyToAscii(keyEvent.value().key); chr != '?')
+        if (keyEvent->state == ANAL::State::PRESSED && selected_chr > 0) {
+            if (const char chr = analUtils::analKeyToAscii(keyEvent->key); chr != '?')
                 this->_playername.at(selected_chr++ - 1) = chr;
             if (selected_chr > 4)
                 selected_chr = 4;

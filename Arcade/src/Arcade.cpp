@@ -31,12 +31,14 @@ void Arcade::launch()
         const auto now = std::chrono::system_clock::now();
         const auto needed = now + std::chrono::operator ""ms(33);
 
-	    auto events = this->_renderer->getEvents();
+        auto& real_events = this->_renderer->getEvents();
+	    auto events = real_events;
         this->handleHotKeys(dynamic_cast<MainMenu*>(this->_game.get()) != nullptr, events);
         this->_game->processEvents(events);
         this->_game->compute(*this);
         this->_game->render(*this->_renderer, *this);
 
+        real_events.clear();
         std::this_thread::sleep_until(needed);
     }
 }
@@ -81,11 +83,11 @@ void Arcade::handleHotKeys(const bool bypass, const std::vector<ANAL::Event>& ev
             this->run = false;
         if (bypass)
             continue;
-        if (type == ANAL::EventType::KEYBOARD && keyEvent.value().key == ANAL::Keys::KEY_N && keyEvent.value().state == ANAL::State::PRESSED) {
+        if (type == ANAL::EventType::KEYBOARD && keyEvent->key == ANAL::Keys::KEY_N && keyEvent->state == ANAL::State::PRESSED) {
             this->nextGame();
             return;
         }
-        if (type == ANAL::EventType::KEYBOARD && keyEvent.value().key == ANAL::Keys::KEY_B && keyEvent.value().state == ANAL::State::PRESSED) {
+        if (type == ANAL::EventType::KEYBOARD && keyEvent->key == ANAL::Keys::KEY_B && keyEvent->state == ANAL::State::PRESSED) {
             this->nextRenderer();
             return;
         }
